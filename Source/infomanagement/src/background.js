@@ -1,16 +1,18 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
-import { getBaseInfo } from './data-driven.js'
+// eslint-disable-next-line no-unused-vars
+import { getBaseInfo, setBaseInfo, getJobTypeList, getJobList, addJob, delJob, getHrList, getHrLevel, addHr, addProject, getProjectList, delProject } from './data-driven.js'
 // import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Electron框架组件
 const electron = require('electron')
-
 const Menu = electron.Menu
+const globalShortcut = electron.globalShortcut
+let win
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -20,7 +22,7 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow () {
   Menu.setApplicationMenu(null) // 隐藏菜单栏
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     title: '信息管理',
@@ -53,6 +55,12 @@ app.on('window-all-closed', () => {
   }
 })
 
+function exit () {
+  // 注销所有快捷键
+  globalShortcut.unregisterAll()
+  app.quit()
+}
+
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
@@ -72,7 +80,7 @@ app.on('ready', async () => {
     } */
   }
   createWindow()
-  getBaseInfo()
+  // getBaseInfo()
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -89,3 +97,68 @@ if (isDevelopment) {
     })
   }
 }
+
+// 注册全局快捷键
+app.whenReady().then(() => {
+  // 注册Ctrl+F1快捷键事件
+  globalShortcut.register('CommandOrControl+F1', () => {
+    exit()
+  })
+})
+
+// 监听渲染进程通信
+ipcMain.on('getBaseInfo', (event) => {
+  getBaseInfo(res => {
+    event.sender.send('getBaseInfo', res)
+  })
+})
+ipcMain.on('getJobTypeList', (event) => {
+  getJobTypeList(res => {
+    event.sender.send('getJobTypeList', res)
+  })
+})
+ipcMain.on('getJobList', (event) => {
+  getJobList(res => {
+    event.sender.send('getJobList', res)
+  })
+})
+ipcMain.on('addJob', (event, json) => {
+  addJob(json, res => {
+    event.sender.send('addJob', res)
+  })
+})
+ipcMain.on('delJob', (event, json) => {
+  delJob(json, res => {
+    event.sender.send('delJob', res)
+  })
+})
+ipcMain.on('getHrList', (event) => {
+  getHrList(res => {
+    event.sender.send('getHrList', res)
+  })
+})
+ipcMain.on('getHrLevel', (event) => {
+  getHrLevel(res => {
+    event.sender.send('getHrLevel', res)
+  })
+})
+ipcMain.on('addHr', (event, json) => {
+  addHr(json, res => {
+    event.sender.send('addHr', res)
+  })
+})
+ipcMain.on('getProjectList', (event) => {
+  getProjectList(res => {
+    event.sender.send('getProjectList', res)
+  })
+})
+ipcMain.on('addProject', (event, json) => {
+  addProject(json, res => {
+    event.sender.send('addProject', res)
+  })
+})
+ipcMain.on('delProject', (event, json) => {
+  delProject(json, res => {
+    event.sender.send('delProject', res)
+  })
+})

@@ -1,18 +1,45 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>Home</h1>
+    <div>
+      <div class="m-1">
+        <el-tag type="success">{{ info.software_name }}</el-tag>
+      </div>
+      <div class="m-1">
+        <el-tag type="danger">{{ info.version_number }}</el-tag>
+      </div>
+      <div class="m-1">
+        <el-tag type="info">{{ info.author }}</el-tag>
+      </div>
+      <div class="m-1">
+        <el-tag type="warning">{{ info.contact }}</el-tag>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
 export default {
   name: 'home',
-  components: {
-    HelloWorld
+  data () {
+    return {
+      info: {}
+    }
+  },
+  methods: {
+    init () {
+      this.ipcRenderer.send('getBaseInfo')
+      this.ipcRenderer.on('getBaseInfo', (event, res) => {
+        console.log('getBaseInfo', res)
+        this.info = res
+      })
+    }
+  },
+  created () {
+    this.init()
+  },
+  beforeDestroy () {
+    this.ipcRenderer.removeAllListeners('getBaseInfo')
   }
 }
 </script>
