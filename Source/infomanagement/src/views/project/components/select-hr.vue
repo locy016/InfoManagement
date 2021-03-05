@@ -1,8 +1,8 @@
 <template>
   <div class="job">
-    <h1>This is an job list page</h1>
+    <h1>This is an select hr page</h1>
     <div>
-        <el-button type="primary" class="w-100" @click="onUpd">添加</el-button>
+        <el-button type="primary" class="w-100" @click="onUpd">更新人员名单</el-button>
     </div>
     <div class="m-4">
         <el-table
@@ -56,7 +56,7 @@ export default {
       multipleSelection: this.dataSource
     }
   },
-  props: ['dataSource'],
+  props: ['dataSource', 'show'],
   methods: {
     init () {
       this.ipcRenderer.send('getHrList')
@@ -68,7 +68,9 @@ export default {
       this.multipleSelection = val
     },
     onUpd () {
-      this.dataSource = this.multipleSelection
+      // this.dataSource = this.multipleSelection
+      this.$emit('update:dataSource', this.multipleSelection)
+      this.$emit('update:show', false)
     }
   },
   created () {

@@ -58,7 +58,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button class="w-100" @click="dialogVisible = true">添加人员</el-button>
+          <el-button class="w-100" @click="dialogVisible = true">选择人员</el-button>
         </el-form-item>
 
         <el-dialog
@@ -66,7 +66,7 @@
           :visible.sync="dialogVisible"
           width="90%"
           style="height:600px;">
-            <selecthr v-if="dialogVisible" v-model="form.detailData"></selecthr>
+            <selecthr v-if="dialogVisible" :dataSource.sync="form.detailData" :show.sync="dialogVisible"></selecthr>
             <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
             </span>
@@ -89,7 +89,7 @@
                 label="身份证号">
             </el-table-column>
             <el-table-column
-                prop="wages"
+                prop="pay"
                 label="工资/天">
             </el-table-column>
             <el-table-column
@@ -136,6 +136,14 @@ export default {
         detailData: []
       },
       dialogVisible: false
+    }
+  },
+  watch: {
+    'form.detailData': {
+      handler (val) {
+        console.log('form.detailData', this.form.detailData)
+      },
+      deep: true
     }
   },
   components: { selecthr },

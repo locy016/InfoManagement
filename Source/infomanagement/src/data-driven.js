@@ -40,7 +40,7 @@ export function delJob (json, callback) {
 }
 
 export function getHrList (callback) {
-  let sql = 'select real_name, mobile_phone, id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, level, t_hr_level.[level_name], use_flag, del_flag, create_time from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no'
+  let sql = 'select real_name, mobile_phone, id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no'
   db.all(sql, function (_err, row) {
     callback(row)
   })
