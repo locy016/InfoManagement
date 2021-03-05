@@ -1,5 +1,7 @@
 // var fs = require('fs')
-var file = 'database.db' // 数据库文件的路径
+var path = (process.env.WEBPACK_DEV_SERVER_URL) ? 'db/' : 'resources/db/'
+var file = path + 'database.db' // 数据库文件的路径
+// resources/db/database.db
 // var exists = fs.existsSync(file)
 var sqlite3 = require('sqlite3').verbose()
 var db = new sqlite3.Database(file)
