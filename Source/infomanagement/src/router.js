@@ -20,43 +20,43 @@ export default new Router({
     {
       path: '/job-type',
       name: 'job-type',
-      component: () => import('./views/job-type/index.vue'),
+      component: () => import('./views/job-type/list.vue'),
       meta: { topShow: true }
     },
     {
       path: '/job-list',
       name: 'job-list',
-      component: () => import('./views/job/job-list.vue'),
+      component: () => import('./views/job/list.vue'),
       meta: { topShow: true }
     },
     {
-      path: '/add-job',
-      name: 'add-job',
-      component: () => import('./views/job/add-job.vue'),
+      path: '/job-add',
+      name: 'job-add',
+      component: () => import('./views/job/add.vue'),
       meta: { topShow: true }
     },
     {
-      path: '/add-hr',
-      name: 'add-hr',
-      component: () => import('./views/hr/add-hr.vue'),
+      path: '/hr-add',
+      name: 'hr-add',
+      component: () => import('./views/hr/add.vue'),
       meta: { topShow: true }
     },
     {
       path: '/hr-list',
       name: 'hr-list',
-      component: () => import('./views/hr/hr-list.vue'),
+      component: () => import('./views/hr/list.vue'),
       meta: { topShow: true }
     },
     {
-      path: '/add-project',
-      name: 'add-project',
-      component: () => import('./views/project/add-project.vue'),
+      path: '/project-add',
+      name: 'project-add',
+      component: () => import('./views/project/add.vue'),
       meta: { topShow: true }
     },
     {
       path: '/project-list',
       name: 'project-list',
-      component: () => import('./views/project/project-list.vue'),
+      component: () => import('./views/project/list.vue'),
       meta: { topShow: true }
     },
     {

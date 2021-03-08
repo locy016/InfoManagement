@@ -95,6 +95,14 @@
             <el-table-column
                 prop="date_array"
                 label="施工日期">
+                <template slot-scope="scope">
+                  <el-date-picker
+                    type="dates"
+                    v-model="scope.row.date_array"
+                    placeholder="选择一个或多个日期"
+                    value-format="timestamp">
+                  </el-date-picker>
+                </template>
             </el-table-column>
 
             <el-table-column
