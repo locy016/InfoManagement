@@ -59,6 +59,13 @@ export function addHr (json, callback) {
   callback(sql)
 }
 
+export function getSelectHrList (callback) {
+  let sql = 'select t_hr.real_name, mobile_phone, t_hr.id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time, (select date_array from t_project_details where t_project_details.[id_number] = t_hr.[id_number] order by id desc limit 0,1 ) from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no'
+  db.all(sql, function (_err, row) {
+    callback(row)
+  })
+}
+
 export function addProject (json, callback) {
   // 插入信息
   let sql = db.prepare('insert into t_project_dispatch (project_no, project_name, project_address, project_range, construction_unit, employer_unit, project_price, tax_rate, start_date, end_date) values ("' + json.project_no + '","' + json.project_name + '","' + json.project_address + '","' + json.project_range + '","' + json.construction_unit + '","' + json.employer_unit + '",' + json.project_price + ',' + json.tax_rate + ',"' + json.start_date + '","' + json.end_date + '")')
@@ -66,8 +73,8 @@ export function addProject (json, callback) {
   sql.run()
   json.detailData.forEach(element => {
     // 循环子信息
-    let _ext = db.prepare('insert into t_project_details (project_no, job_name, real_name, id_number, wages, date_array, day_count) values ("' + element.project_no + '", "' + element.job_name + '", "' + element.real_name + '", "' + element.id_number + '", ' + element.wages + ', "' + element.date_array + '", 0)') /* element.date_array.length */
-    console.log('insert into t_project_details (project_no, job_name, real_name, id_number, wages, date_array, day_count) values ("' + json.project_no + '", "' + element.job_name + '", "' + element.real_name + '", "' + element.id_number + '", ' + element.pay + ', "' + element.date_array + '", 0)')
+    let _ext = db.prepare('insert into t_project_details (project_no, job_name, real_name, id_number, wages, date_array, day_count) values ("' + json.project_no + '", "' + element.job_name + '", "' + element.real_name + '", "' + element.id_number + '", ' + element.pay + ', "' + element.date_array + '", ' + element.day_count + ')')
+    console.log('insert into t_project_details (project_no, job_name, real_name, id_number, wages, date_array, day_count) values ("' + json.project_no + '", "' + element.job_name + '", "' + element.real_name + '", "' + element.id_number + '", ' + element.pay + ', "' + element.date_array + '", ' + element.day_count + ')')
     _ext.run()
   })
   callback(sql)

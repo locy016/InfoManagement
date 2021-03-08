@@ -59,8 +59,8 @@ export default {
   props: ['dataSource', 'show'],
   methods: {
     init () {
-      this.ipcRenderer.send('getHrList')
-      this.ipcRenderer.on('getHrList', (event, res) => {
+      this.ipcRenderer.send('getSelectHrList')
+      this.ipcRenderer.on('getSelectHrList', (event, res) => {
         this.tableData = res
       })
     },
@@ -77,7 +77,7 @@ export default {
     this.init()
   },
   beforeDestroy () {
-    this.ipcRenderer.removeAllListeners('getHrList')
+    this.ipcRenderer.removeAllListeners('getSelectHrList')
   }
 }
 </script>

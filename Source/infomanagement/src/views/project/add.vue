@@ -102,6 +102,15 @@
                     placeholder="选择一个或多个日期"
                     value-format="timestamp">
                   </el-date-picker>
+                  <!-- {{ (scope.row.date_array) ? scope.row.date_array.length : 0 }} -->
+                </template>
+            </el-table-column>
+
+            <el-table-column
+                prop="date_array"
+                label="时长">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.day_count" :placeholder="(scope.row.date_array) ? scope.row.date_array.length : 0"></el-input>
                 </template>
             </el-table-column>
 
