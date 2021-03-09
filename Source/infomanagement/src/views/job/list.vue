@@ -50,15 +50,18 @@ export default {
   },
   methods: {
     init () {
+      this.getJobList()
+    },
+    getJobList () {
       this.ipcRenderer.send('getJobList')
-      this.ipcRenderer.on('getJobList', (event, res) => {
+      this.ipcRenderer.once('getJobList', (event, res) => {
         console.log('getJobList', res)
         this.tableData = res
       })
     },
     delClick (row) {
       this.ipcRenderer.send('delJob', row)
-      this.ipcRenderer.on('delJob', (event, res) => {
+      this.ipcRenderer.once('delJob', (event, res) => {
         console.log('delJob', res)
         this.init()
       })
@@ -67,9 +70,6 @@ export default {
   created () {
     this.init()
   },
-  beforeDestroy () {
-    this.ipcRenderer.removeAllListeners('getJobList')
-    this.ipcRenderer.removeAllListeners('delJob')
-  }
+  beforeDestroy () {}
 }
 </script>

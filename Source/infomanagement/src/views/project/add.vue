@@ -124,21 +124,22 @@
       </el-form>
     </div>
     <el-dialog
-      title="提示"
+      title="选择项目施工人员名单"
       :visible.sync="dialogVisible"
       :append-to-body="true"
+      :destroy-on-close="true"
       width="90%"
-      style="height:600px;">
+      top="5rem"
+      close-on-click-modal
+      close-on-press-escape
+      show-close>
         <selecthr v-if="dialogVisible" :dataSource.sync="form.detailData" :show.sync="dialogVisible"></selecthr>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-        </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import selecthr from './components/select-hr.vue' // 试卷树
+import selecthr from './components/select-hr.vue' // 选择人员
 export default {
   name: 'add-job',
   data () {
@@ -173,7 +174,7 @@ export default {
     delClick (row) {},
     onSubmit () {
       this.ipcRenderer.send('addProject', this.form)
-      this.ipcRenderer.on('addProject', (_event, res) => {
+      this.ipcRenderer.once('addProject', (_event, res) => {
         console.log('addProject', res)
         if (JSON.stringify(res) === '{}') {
           this.$message.success('添加完成')
@@ -186,8 +187,6 @@ export default {
   created () {
     this.init()
   },
-  beforeDestroy () {
-    this.ipcRenderer.removeAllListeners('addProject')
-  }
+  beforeDestroy () { }
 }
 </script>

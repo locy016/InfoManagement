@@ -4,7 +4,7 @@ import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 // eslint-disable-next-line no-unused-vars
-import { getBaseInfo, setBaseInfo, getJobTypeList, getJobList, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, addProject, getProjectList, delProject } from './data-driven.js'
+import { getBaseInfo, setBaseInfo, getJobTypeList, getJobList, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, getProjectDetails, addProject, getProjectList, delProject } from './data-driven.js'
 // import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -162,8 +162,13 @@ ipcMain.on('getProjectList', (event) => {
     event.sender.send('getProjectList', res)
   })
 })
-ipcMain.on('getSelectHrList', (event) => {
-  getSelectHrList(res => {
+ipcMain.on('getProjectDetails', (event, projectNo) => {
+  getProjectDetails(projectNo, res => {
+    event.sender.send('getProjectDetails', res)
+  })
+})
+ipcMain.on('getSelectHrList', (event, jobNo) => {
+  getSelectHrList(jobNo, res => {
     event.sender.send('getSelectHrList', res)
   })
 })

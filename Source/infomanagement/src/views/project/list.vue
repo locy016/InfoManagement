@@ -13,10 +13,10 @@
                 prop="project_name"
                 label="项目名称">
             </el-table-column>
-            <el-table-column
+            <!-- <el-table-column
                 prop="project_address"
                 label="项目地点">
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
                 prop="project_range"
                 label="承包范围">
@@ -39,17 +39,26 @@
             </el-table-column>
             <el-table-column
                 prop="create_time"
-                label="创建时间">
+                label="开始时间">
                 <template slot-scope="scope">
                   <p>{{ formatShortDate(scope.row.start_date) }}</p>
                 </template>
             </el-table-column>
             <el-table-column
                 prop="create_time"
-                label="创建时间">
+                label="结束时间">
                 <template slot-scope="scope">
                   <p>{{ formatShortDate(scope.row.end_date) }}</p>
                 </template>
+            </el-table-column>
+
+            <el-table-column
+              fixed="right"
+              label="查看"
+              width="100">
+              <template slot-scope="scope">
+                <el-button @click="getProjectDetails(scope.row)" type="text" size="small">详情</el-button>
+              </template>
             </el-table-column>
 
             <el-table-column
@@ -62,29 +71,54 @@
             </el-table-column>
         </el-table>
     </div>
+    <el-dialog
+      :title="'No.' + itemData.project_no"
+      :visible.sync="dialogVisible"
+      :append-to-body="true"
+      :destroy-on-close="true"
+      width="90%"
+      top="5rem"
+      close-on-click-modal
+      close-on-press-escape
+      show-close>
+        <projectdetails v-if="dialogVisible" :itemData="itemData" :show.sync="dialogVisible"></projectdetails>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import projectdetails from './components/project-details.vue' // 查看详情
 export default {
   name: 'hr-list',
   data () {
     return {
-      tableData: []
+      tableData: [],
+      itemData: [],
+      dialogVisible: false
     }
   },
+  components: { projectdetails },
   methods: {
     init () {
+      this.getProjectList()
+    },
+    getProjectList () {
       this.ipcRenderer.send('getProjectList')
-      this.ipcRenderer.on('getProjectList', (event, res) => {
-        console.log('getProjectList', res)
+      this.ipcRenderer.once('getProjectList', (event, res) => {
         this.tableData = res
+      })
+    },
+    getProjectDetails (row) {
+      this.ipcRenderer.send('getProjectDetails', row.project_no)
+      this.ipcRenderer.once('getProjectDetails', (event, res) => {
+        this.dialogVisible = true
+        this.itemData = row
+        this.itemData.details = res
       })
     },
     delClick (row) {
       this.ipcRenderer.send('delProject', row)
-      this.ipcRenderer.on('delProject', (event, res) => {
-        console.log('delProject', res)
+      this.ipcRenderer.once('delProject', (event, res) => {
         this.init()
       })
     }
@@ -92,9 +126,6 @@ export default {
   created () {
     this.init()
   },
-  beforeDestroy () {
-    this.ipcRenderer.removeAllListeners('getJobList')
-    this.ipcRenderer.removeAllListeners('delProject')
-  }
+  beforeDestroy () { }
 }
 </script>

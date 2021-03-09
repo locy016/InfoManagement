@@ -1,10 +1,27 @@
 <template>
   <div class="job">
-    <h1>This is an select hr page</h1>
-    <div>
-        <el-button type="primary" class="w-100" @click="onUpd">更新人员名单</el-button>
+    <!-- <h1>This is an select hr page</h1> -->
+    <div class="m-0">
+      <el-row :gutter="10">
+        <el-col :span="2">
+          <el-button class="w-100" @click="getSelectHrList()">全部</el-button>
+        </el-col>
+        <el-col :span="6">
+          <el-select v-model="job_value" placeholder="按工种筛选" style="width:100%;">
+            <el-option
+              v-for="(item, index) in jobData"
+              :key="index"
+              :label="item.job_name"
+              :value="item.job_no">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="16">
+          <el-button class="w-100" @click="onUpd" type="primary" plain>更新人员名单</el-button>
+        </el-col>
+      </el-row>
     </div>
-    <div class="m-4">
+    <div class="mt-2" style="height:350px;overflow-y:auto">
         <el-table
             :data="tableData"
             ref="multipleTable"
@@ -19,10 +36,26 @@
                 label="姓名">
             </el-table-column>
             <el-table-column
+                prop="id_number"
+                label="性别">
+                <template slot-scope="scope">
+                  {{ (scope.row.id_number.substr(16,1) % 2 === 1) ? '男' : '女' }}
+                </template>
+            </el-table-column>
+            <el-table-column
+                prop="id_number"
+                label="年龄">
+                <template slot-scope="scope">
+                  {{ calculateAge(scope.row.id_number.substr(6,8)) }}
+                </template>
+            </el-table-column>
+            <el-table-column
+                width="120"
                 prop="mobile_phone"
                 label="电话">
             </el-table-column>
             <el-table-column
+                width="170"
                 prop="id_number"
                 label="身份证号">
             </el-table-column>
@@ -65,6 +98,9 @@
 
         </el-table>
     </div>
+    <div class="mt-4">
+      <span>当前已选择 <b>{{ multipleSelection.length }}</b> 人</span>
+    </div>
   </div>
 </template>
 
@@ -74,16 +110,36 @@ export default {
   data () {
     return {
       tableData: [],
+      job_value: null,
+      jobData: [],
       multipleSelection: this.dataSource
+    }
+  },
+  watch: {
+    job_value (newVal) {
+      if (newVal) {
+        this.getSelectHrList(newVal)
+      }
     }
   },
   props: ['dataSource', 'show'],
   methods: {
     init () {
-      this.ipcRenderer.send('getSelectHrList')
-      this.ipcRenderer.on('getSelectHrList', (event, res) => {
+      this.getSelectHrList()
+      this.getJobList()
+    },
+    getSelectHrList (jobNo) {
+      this.ipcRenderer.send('getSelectHrList', jobNo)
+      this.ipcRenderer.once('getSelectHrList', (event, res) => {
         console.log('res', res)
         this.tableData = res
+      })
+    },
+    getJobList () {
+      this.ipcRenderer.send('getJobList')
+      this.ipcRenderer.once('getJobList', (event, res) => {
+        console.log('getJobList', res)
+        this.jobData = res
       })
     },
     handleSelectionChange (val) {
@@ -98,8 +154,6 @@ export default {
   created () {
     this.init()
   },
-  beforeDestroy () {
-    this.ipcRenderer.removeAllListeners('getSelectHrList')
-  }
+  beforeDestroy () { }
 }
 </script>

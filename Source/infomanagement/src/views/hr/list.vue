@@ -26,6 +26,7 @@
               :data="tableData"
               style="width: 100%">
               <el-table-column
+                  sortable
                   prop="real_name"
                   label="姓名">
               </el-table-column>
@@ -54,11 +55,13 @@
                   label="身份证号">
               </el-table-column>
               <el-table-column
+                  sortable
                   width="90"
                   prop="job_name"
                   label="工种">
               </el-table-column>
               <el-table-column
+                  sortable
                   prop="level_name"
                   label="级别">
               </el-table-column>
