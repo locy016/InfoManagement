@@ -11,5 +11,15 @@ export default {
       // return year + '/' + month + '/' + day
       return currDate.toLocaleDateString()
     }
+    Vue.prototype.calculateAge = function (birthday) {
+      birthday = new Date(birthday.substr(0, 4), birthday.substr(4, 2), birthday.substr(6, 2))
+      let today = new Date()
+      let age = today.getFullYear() - birthday.getFullYear()
+      if (today.getMonth() > birthday.getMonth() || (today.getMonth() === birthday.getMonth() && today.getDay() >= birthday.getDay())) {
+        return age
+      } else {
+        return age - 1
+      }
+    }
   }
 }

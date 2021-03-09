@@ -61,17 +61,6 @@
           <el-button class="w-100" @click="dialogVisible = true">选择人员</el-button>
         </el-form-item>
 
-        <el-dialog
-          title="提示"
-          :visible.sync="dialogVisible"
-          width="90%"
-          style="height:600px;">
-            <selecthr v-if="dialogVisible" :dataSource.sync="form.detailData" :show.sync="dialogVisible"></selecthr>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">取 消</el-button>
-            </span>
-        </el-dialog>
-
         <div class="mt-2">
           <el-table
             :data="form.detailData"
@@ -85,6 +74,7 @@
                 label="姓名">
             </el-table-column>
             <el-table-column
+                width="170"
                 prop="id_number"
                 label="身份证号">
             </el-table-column>
@@ -93,13 +83,15 @@
                 label="工资/天">
             </el-table-column>
             <el-table-column
+                width="100"
                 prop="date_array"
                 label="施工日期">
                 <template slot-scope="scope">
                   <el-date-picker
                     type="dates"
+                    style="width:90px;"
                     v-model="scope.row.date_array"
-                    placeholder="选择一个或多个日期"
+                    placeholder="选择"
                     value-format="timestamp">
                   </el-date-picker>
                   <!-- {{ (scope.row.date_array) ? scope.row.date_array.length : 0 }} -->
@@ -107,21 +99,22 @@
             </el-table-column>
 
             <el-table-column
+                width="80"
                 prop="date_array"
-                label="时长">
+                label="时长/天">
                 <template slot-scope="scope">
                   <el-input v-model="scope.row.day_count" :placeholder="(scope.row.date_array) ? scope.row.date_array.length : 0"></el-input>
                 </template>
             </el-table-column>
 
-            <el-table-column
+            <!-- <el-table-column
               fixed="right"
               label="操作"
               width="100">
               <template slot-scope="scope">
                 <el-button @click="delClick(scope.row)" type="text" size="small">删除</el-button>
               </template>
-            </el-table-column>
+            </el-table-column> -->
           </el-table>
         </div>
 
@@ -130,6 +123,17 @@
         </el-form-item>
       </el-form>
     </div>
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      :append-to-body="true"
+      width="90%"
+      style="height:600px;">
+        <selecthr v-if="dialogVisible" :dataSource.sync="form.detailData" :show.sync="dialogVisible"></selecthr>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 

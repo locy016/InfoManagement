@@ -3,7 +3,7 @@ module.exports = {
     electronBuilder: {
       builderOptions: {
         appId: 'I702rwFC',
-        productName: '信息管理', // 项目名，也是生成的安装文件名，即aDemo.exe
+        productName: '工程人资信息管理', // 项目名，也是生成的安装文件名
         copyright: 'Copyright © 2021', // 版权信息
         win: {
           icon: 'public/favicon.ico',

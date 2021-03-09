@@ -30,9 +30,11 @@
         </el-menu>
       </header>
     </template>
-    <transition name="slide-fade">
-      <router-view />
-    </transition>
+    <div class="main">
+      <transition name="slide-fade">
+        <router-view />
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -65,5 +67,18 @@ export default {
 .slide-fade-enter, .slide-fade-leave-to
 /* .slide-fade-leave-active for below version 2.1.8 */ {
   opacity: 0;
+}
+header{
+  position: fixed;
+  width: 100%;
+  height: 7%;
+  background: #F0F0F0;
+}
+.main{
+  position: fixed;
+  top: 10%;
+  height: 93%;
+  width: 100%;
+  overflow-y: auto;
 }
 </style>

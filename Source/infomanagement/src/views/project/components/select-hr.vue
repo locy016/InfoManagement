@@ -34,6 +34,27 @@
                 prop="level_name"
                 label="级别">
             </el-table-column>
+            <el-table-column
+                width="120"
+                prop="last_date_array"
+                label="近期项目日期">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.last_date_array">
+                    {{ JSON.parse('[' + scope.row.last_date_array + ']').length }}天
+                    <el-tooltip class="item" effect="dark" :content="scope.row.last_date_array" placement="left">
+                      <div slot="content">
+                        <p for="" v-for="(item, index) in JSON.parse('[' + scope.row.last_date_array + ']')" :key="index">
+                          {{ formatShortDate(item) }}
+                        </p>
+                      </div>
+                      <i class="el-icon-info"></i>
+                    </el-tooltip>
+                  </template>
+                  <template v-else>
+                    空
+                  </template>
+                </template>
+            </el-table-column>
             <!-- <el-table-column
                 prop="create_time"
                 label="创建时间">
@@ -61,6 +82,7 @@ export default {
     init () {
       this.ipcRenderer.send('getSelectHrList')
       this.ipcRenderer.on('getSelectHrList', (event, res) => {
+        console.log('res', res)
         this.tableData = res
       })
     },

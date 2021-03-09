@@ -45,6 +45,21 @@ export function getHrList (callback) {
     callback(row)
   })
 }
+export function getHrListByJobNo (jobNo, callback) {
+  let sql = 'select real_name, mobile_phone, id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no where t_hr.job_no = "' + jobNo + '"'
+  console.log('select real_name, mobile_phone, id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no where t_hr.job_no = "' + jobNo + '"')
+  db.all(sql, function (_err, row) {
+    callback(row)
+  })
+}
+
+export function getJobCount (callback) {
+  let sql = 'select t_job_type.[type_name], t_job.[job_no], t_job.[job_name], count(t_hr.job_no) job_count from t_hr left join t_job on t_hr.job_no = t_job.job_no left join t_job_type on t_job.type_no = t_job_type.type_no group by t_hr.job_no'
+  db.all(sql, function (_err, row) {
+    console.log('getJobCount', row)
+    callback(row)
+  })
+}
 
 export function getHrLevel (callback) {
   let sql = 'select level_name, level_no from t_hr_level'
@@ -60,8 +75,9 @@ export function addHr (json, callback) {
 }
 
 export function getSelectHrList (callback) {
-  let sql = 'select t_hr.real_name, mobile_phone, t_hr.id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time, (select date_array from t_project_details where t_project_details.[id_number] = t_hr.[id_number] order by id desc limit 0,1 ) from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no'
+  let sql = 'select t_hr.real_name, mobile_phone, t_hr.id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time, (select date_array from t_project_details where t_project_details.[id_number] = t_hr.[id_number] order by id desc limit 0,1) last_date_array from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no'
   db.all(sql, function (_err, row) {
+    console.log('getSelectHrList', row)
     callback(row)
   })
 }
@@ -93,4 +109,4 @@ export function delProject (json, callback) {
   callback(sql)
 }
 
-export default { getBaseInfo, getJobTypeList, getJobList, addJob, delJob, getHrList, getHrLevel, addHr, addProject, getProjectList, delProject }
+export default { getBaseInfo, getJobTypeList, getJobList, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, addProject, getProjectList, delProject }
