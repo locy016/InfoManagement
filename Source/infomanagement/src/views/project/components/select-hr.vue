@@ -68,22 +68,23 @@
                 label="级别">
             </el-table-column>
             <el-table-column
+                width="120"
                 prop="start_date"
                 label="项目开始">
                 <template slot-scope="scope">
-                  <p>{{ formatShortDate(scope.row.create_time) }}</p>
+                  <p>{{ (scope.row.create_time) ? formatShortDate(scope.row.create_time) : '空' }}</p>
                 </template>
             </el-table-column>
             <el-table-column
                 width="120"
-                prop="last_date_array"
+                prop="date_array"
                 label="施工日期">
                 <template slot-scope="scope">
                   <template v-if="scope.row.date_array">
-                    {{ JSON.parse('[' + scope.row.last_date_array + ']').length }}天
-                    <el-tooltip class="item" effect="dark" :content="scope.row.last_date_array" placement="left">
+                    {{ JSON.parse('[' + scope.row.date_array + ']').length }}天
+                    <el-tooltip class="item" effect="dark" :content="scope.row.date_array" placement="left">
                       <div slot="content">
-                        <p for="" v-for="(item, index) in JSON.parse('[' + scope.row.last_date_array + ']')" :key="index">
+                        <p for="" v-for="(item, index) in JSON.parse('[' + scope.row.date_array + ']')" :key="index">
                           {{ formatShortDate(item) }}
                         </p>
                       </div>
@@ -96,10 +97,11 @@
                 </template>
             </el-table-column>
             <el-table-column
+                width="120"
                 prop="end_date"
                 label="结束时间">
                 <template slot-scope="scope">
-                  <p>{{ formatShortDate(scope.row.create_time) }}</p>
+                  <p>{{ (scope.row.end_date) ? formatShortDate(scope.row.end_date) : '空' }}</p>
                 </template>
             </el-table-column>
 
