@@ -68,11 +68,18 @@
                 label="级别">
             </el-table-column>
             <el-table-column
+                prop="start_date"
+                label="项目开始">
+                <template slot-scope="scope">
+                  <p>{{ formatShortDate(scope.row.create_time) }}</p>
+                </template>
+            </el-table-column>
+            <el-table-column
                 width="120"
                 prop="last_date_array"
-                label="近期项目日期">
+                label="施工日期">
                 <template slot-scope="scope">
-                  <template v-if="scope.row.last_date_array">
+                  <template v-if="scope.row.date_array">
                     {{ JSON.parse('[' + scope.row.last_date_array + ']').length }}天
                     <el-tooltip class="item" effect="dark" :content="scope.row.last_date_array" placement="left">
                       <div slot="content">
@@ -88,13 +95,13 @@
                   </template>
                 </template>
             </el-table-column>
-            <!-- <el-table-column
-                prop="create_time"
-                label="创建时间">
+            <el-table-column
+                prop="end_date"
+                label="结束时间">
                 <template slot-scope="scope">
                   <p>{{ formatShortDate(scope.row.create_time) }}</p>
                 </template>
-            </el-table-column> -->
+            </el-table-column>
 
         </el-table>
     </div>

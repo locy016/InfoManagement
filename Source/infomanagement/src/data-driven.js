@@ -74,7 +74,7 @@ export function addHr (json, callback) {
 }
 
 export function getSelectHrList (jobNo, callback) {
-  let sql = 'select t_hr.real_name, mobile_phone, t_hr.id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time, (select date_array from t_project_details where t_project_details.[id_number] = t_hr.[id_number] order by id desc limit 0,1) last_date_array from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no '
+  let sql = 'select t_hr.[real_name], [mobile_phone], t_hr.[id_number], [address], [bank_of_deposit], [bank_account], t_hr.[job_no], t_job.[job_name], t_job.pay, level, t_hr_level.[level_name], [use_flag], [del_flag], [create_time], t_hr_working.[project_no], t_hr_working.[start_date], t_hr_working.[end_date], t_project_details.[date_array] from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no left join t_hr_working on t_hr.[id_number] = t_hr_working.[id_number] left join t_project_details on t_project_details.[id_number] = t_hr_working.[id_number] and t_hr_working.[project_no] = t_project_details.project_no '
   if (jobNo) {
     sql += 'where t_hr.job_no = "' + jobNo + '"'
   }
@@ -86,13 +86,17 @@ export function getSelectHrList (jobNo, callback) {
 export function addProject (json, callback) {
   // 插入信息
   let sql = db.prepare('insert into t_project_dispatch (project_no, project_name, project_address, project_range, construction_unit, employer_unit, project_price, tax_rate, start_date, end_date) values ("' + json.project_no + '","' + json.project_name + '","' + json.project_address + '","' + json.project_range + '","' + json.construction_unit + '","' + json.employer_unit + '",' + json.project_price + ',' + json.tax_rate + ',"' + json.start_date + '","' + json.end_date + '")')
-  // console.log('insert into t_project_dispatch (project_no, project_name, project_address, project_range, construction_unit, employer_unit, project_price, tax_rate, start_date, end_date) values ("' + json.project_no + '","' + json.project_name + '","' + json.project_address + '","' + json.project_range + '","' + json.construction_unit + '","' + json.employer_unit + '",' + json.project_price + ',' + json.tax_rate + ',"' + json.start_date + '","' + json.end_date + '")')
   sql.run()
   json.detailData.forEach(element => {
     // 循环子信息
     let _ext = db.prepare('insert into t_project_details (project_no, job_name, real_name, id_number, wages, date_array, day_count) values ("' + json.project_no + '", "' + element.job_name + '", "' + element.real_name + '", "' + element.id_number + '", ' + element.pay + ', "' + element.date_array + '", ' + element.day_count + ')')
     console.log('insert into t_project_details (project_no, job_name, real_name, id_number, wages, date_array, day_count) values ("' + json.project_no + '", "' + element.job_name + '", "' + element.real_name + '", "' + element.id_number + '", ' + element.pay + ', "' + element.date_array + '", ' + element.day_count + ')')
     _ext.run()
+    let _judge = 'select * from t_hr_working where id_number = "' + element.id_number + '"'
+    db.all(_judge, function (_err, row) {
+      let _sync = (row.length > 0) ? db.prepare('update t_hr_working set project_no = "' + element.id_number + '", start_date = "' + json.start_date + '", end_date = "' + json.end_date + '" where id_number = "' + element.id_number + '"') : db.prepare('insert into t_hr_working (id_number, project_no, start_date, end_date) values ("' + element.id_number + '", "' + json.project_no + '", "' + json.start_date + '","' + json.end_date + '")')
+      _sync.run()
+    })
   })
   callback(sql)
 }
