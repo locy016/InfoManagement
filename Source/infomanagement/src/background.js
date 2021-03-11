@@ -23,8 +23,8 @@ async function createWindow () {
   Menu.setApplicationMenu(null) // 隐藏菜单栏
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1500,
+    height: 927,
     title: '信息管理',
     frame: true,
     webPreferences: {

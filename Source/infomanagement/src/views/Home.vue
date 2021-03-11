@@ -29,7 +29,7 @@ export default {
   methods: {
     init () {
       this.ipcRenderer.send('getBaseInfo')
-      this.ipcRenderer.on('getBaseInfo', (event, res) => {
+      this.ipcRenderer.once('getBaseInfo', (event, res) => {
         console.log('getBaseInfo', res)
         this.info = res
       })
@@ -38,8 +38,6 @@ export default {
   created () {
     this.init()
   },
-  beforeDestroy () {
-    this.ipcRenderer.removeAllListeners('getBaseInfo')
-  }
+  beforeDestroy () { }
 }
 </script>

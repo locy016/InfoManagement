@@ -4,7 +4,7 @@
       <el-col :span="16">
         <el-input
           type="password"
-          placeholder="请输入密钥"
+          placeholder="请输入登录密钥."
           v-model="password"/>
       </el-col>
       <el-col :span="6" :offset="2">
@@ -28,10 +28,14 @@ export default {
     onSubmit (formName) {
       // 验证功能
       if (this.password) {
-        // 使用 vue-router 路由到指定页面，该方式称之为编程式导航
-        this.$router.push('/home')
+        if (this.password === '.') {
+          // 使用 vue-router 路由到指定页面，该方式称之为编程式导航
+          this.$router.push('/home')
+        } else {
+          this.$message.error('登录密钥验证失败.')
+        }
       } else {
-        this.$message.error('请输入密钥')
+        this.$message.error('登录密钥不能为空.')
         return false
       }
     }

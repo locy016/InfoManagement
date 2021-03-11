@@ -4,13 +4,13 @@
 
     <el-row>
       <el-col :span="3">
-        <div class="ml-2 text-left">
+        <div class="ml-4 text-left">
           <p>
             <small @click="getHrList"><b>全部</b></small>
           </p>
           <!-- <span>{{jobData}}</span> -->
         </div>
-        <div class="ml-2 text-left">
+        <div class="ml-4 text-left">
           <p v-for="(item, index) in jobData" :key="index">
             <small @click="getHrListByJobNo(item.job_no)">{{item.job_name}} ({{item.job_count}})</small>
           </p>
@@ -46,7 +46,9 @@
                   prop="id_number"
                   label="年龄">
                   <template slot-scope="scope">
-                    {{ calculateAge(scope.row.id_number.substr(6,8)) }}
+                    <span :class="(calculateAge(scope.row.id_number.substr(6,8)) >= 60) ? 'color-red' : ''">
+                      {{ calculateAge(scope.row.id_number.substr(6,8)) }}
+                    </span>
                   </template>
               </el-table-column>
               <el-table-column
