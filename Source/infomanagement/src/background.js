@@ -4,14 +4,19 @@ import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 // eslint-disable-next-line no-unused-vars
-import { getBaseInfo, setBaseInfo, getJobTypeList, getJobList, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, getProjectDetails, addProject, getProjectList, delProject } from './data-driven.js'
+import { getBaseInfo, setBaseInfo, getJobTypeList, getJobList, chkHr, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, getProjectDetails, addProject, getProjectList, delProject } from './data-driven.js'
 // import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Electron框架组件
 const electron = require('electron')
+const { dialog } = require('electron')
 const Menu = electron.Menu
 const globalShortcut = electron.globalShortcut
+// 引用fs，基于Node.js解析文件
+// const fs = require('fs')
+// 引用node-xlsx，基于Node.js解析excel文件数据及生成excel文件
+const xlsx = require('node-xlsx')
 let win
 
 // Scheme must be registered before the app is ready
@@ -153,8 +158,31 @@ ipcMain.on('getHrLevel', (event) => {
   })
 })
 ipcMain.on('addHr', (event, json) => {
-  addHr(json, res => {
-    event.sender.send('addHr', res)
+  chkHr(json, res => {
+    console.log('chkHr')
+    if (res.length > 0) {
+      let result = {}
+      result.code = 20200 // 状态码（已接受） 服务器已接受请求，但尚未处理。
+      if (res[0].mobile_phone === json.mobile_phone) {
+        result.msg = json.real_name + '的手机号码与' + res[0].real_name + '的手机号码重复。'
+      } else if (res[0].id_number === json.id_number) {
+        result.msg = json.real_name + '的身份证号码已存在。'
+      }
+      event.sender.send('addHr', result)
+    } else {
+      console.log('addHr')
+      addHr(json, res => {
+        event.sender.send('addHr', { code: 20000, msg: '数据添加完成。' })
+      })
+    }
+  })
+})
+ipcMain.on('getExcelInfo', (event) => {
+  dialog.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'Custom File Type', extensions: ['xls', 'xlsx'] }] }).then(res => {
+    let xls = xlsx.parse(res.filePaths[0])
+    event.sender.send('getExcelInfo', xls)
+  }).catch(_err => {
+    console.log('err', _err)
   })
 })
 ipcMain.on('getProjectList', (event) => {

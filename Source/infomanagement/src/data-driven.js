@@ -67,10 +67,17 @@ export function getHrLevel (callback) {
   })
 }
 
+export function chkHr (json, callback) {
+  let sql = 'select * from t_hr where mobile_phone = "' + json.mobile_phone + '" or id_number = "' + json.id_number + '"'
+  db.all(sql, function (_err, row) {
+    callback(row)
+  })
+}
+
 export function addHr (json, callback) {
   let sql = db.prepare('insert into t_hr (real_name, mobile_phone, id_number, address, bank_of_deposit, bank_account, job_no, level, use_flag, del_flag, create_time) values ("' + json.real_name + '","' + json.mobile_phone + '","' + json.id_number + '","' + json.address + '","' + json.bank_of_deposit + '","' + json.bank_account + '","' + json.job_no + '",' + json.level + ',1 ,0,"' + new Date() + '" )')
   sql.run()
-  callback(sql)
+  callback()
 }
 
 export function getSelectHrList (jobNo, callback) {
@@ -123,4 +130,4 @@ export function delProject (json, callback) {
   callback(sql)
 }
 
-export default { getBaseInfo, getJobTypeList, getJobList, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, addProject, getProjectList, getProjectDetails, delProject }
+export default { getBaseInfo, getJobTypeList, getJobList, chkHr, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, addProject, getProjectList, getProjectDetails, delProject }

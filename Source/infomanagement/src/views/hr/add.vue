@@ -63,25 +63,31 @@ export default {
   components: {},
   methods: {
     init () {
+      this.getJobList()
+      this.getHrLevel()
+    },
+    getJobList () {
       this.ipcRenderer.send('getJobList')
-      this.ipcRenderer.on('getJobList', (_event, res) => {
+      this.ipcRenderer.once('getJobList', (_event, res) => {
         console.log('getJobList', res)
         this.job_list = res
       })
+    },
+    getHrLevel () {
       this.ipcRenderer.send('getHrLevel')
-      this.ipcRenderer.on('getHrLevel', (_event, res) => {
+      this.ipcRenderer.once('getHrLevel', (_event, res) => {
         console.log('getHrLevel', res)
         this.hr_level = res
       })
     },
     onSubmit () {
       this.ipcRenderer.send('addHr', this.form)
-      this.ipcRenderer.on('addHr', (_event, res) => {
+      this.ipcRenderer.once('addHr', (_event, res) => {
         console.log('addHr', res)
-        if (JSON.stringify(res) === '{}') {
+        if (res === 20100) {
           this.$message.success('添加完成')
         } else {
-          this.$message.error(res)
+          this.$message.error(res.msg)
         }
       })
     }
@@ -89,10 +95,6 @@ export default {
   created () {
     this.init()
   },
-  beforeDestroy () {
-    this.ipcRenderer.removeAllListeners('getJobList')
-    this.ipcRenderer.removeAllListeners('getHrLevel')
-    this.ipcRenderer.removeAllListeners('addHr')
-  }
+  beforeDestroy () { }
 }
 </script>

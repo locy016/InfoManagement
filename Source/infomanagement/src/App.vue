@@ -15,6 +15,7 @@
             <el-menu-item index="/job-add">添加工种</el-menu-item>
             <el-menu-item index="/job-list">工种管理</el-menu-item>
             <el-menu-item index="/hr-add">添加人员</el-menu-item>
+            <el-menu-item index="/hr-import">导入人员</el-menu-item>
             <el-menu-item index="/hr-list">人员列表</el-menu-item>
           </el-submenu>
           <el-submenu index="3">

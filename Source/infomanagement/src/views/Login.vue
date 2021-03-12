@@ -12,7 +12,6 @@
           >登录</el-button>
       </el-col>
     </div>
-
   </div>
 </template>
 

@@ -42,6 +42,12 @@ export default new Router({
       meta: { topShow: true }
     },
     {
+      path: '/hr-import',
+      name: 'hr-import',
+      component: () => import('./views/hr/import.vue'),
+      meta: { topShow: true }
+    },
+    {
       path: '/hr-list',
       name: 'hr-list',
       component: () => import('./views/hr/list.vue'),
