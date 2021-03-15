@@ -77,14 +77,14 @@
             </el-table-column>
             <el-table-column
                 width="120"
-                prop="date_array"
+                prop="last_date_array"
                 label="施工日期">
                 <template slot-scope="scope">
-                  <template v-if="scope.row.date_array">
-                    {{ JSON.parse('[' + scope.row.date_array + ']').length }}天
-                    <el-tooltip class="item" effect="dark" :content="scope.row.date_array" placement="left">
+                  <template v-if="scope.row.last_date_array">
+                    {{ JSON.parse('[' + scope.row.last_date_array + ']').length }}天
+                    <el-tooltip class="item" effect="dark" :content="scope.row.last_date_array" placement="left">
                       <div slot="content">
-                        <p for="" v-for="(item, index) in JSON.parse('[' + scope.row.date_array + ']')" :key="index">
+                        <p for="" v-for="(item, index) in JSON.parse('[' + scope.row.last_date_array + ']')" :key="index">
                           {{ formatShortDate(item) }}
                         </p>
                       </div>

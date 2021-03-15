@@ -4,17 +4,6 @@
 
     <div class="m-4">
       <el-form ref="form" label-width="80px">
-        <el-form-item label="选择表">
-            <el-col :span="8">
-                <el-button class="w-100" @click="getExcelInfo()">导入</el-button>
-            </el-col>
-            <el-col :span="16">
-                <el-select v-model="sheet_index" placeholder="请选择数据表" class="w-100">
-                    <el-option v-for="(item, index) in excel_info" :key="index" :label="item.name" :value="index"></el-option>
-                </el-select>
-            </el-col>
-        </el-form-item>
-
         <el-form-item label="工种">
             <el-select v-model="job_no" placeholder="请选择工种" class="w-100">
                 <el-option v-for="(item, index) in job_list" :key="index" :label="item.job_name" :value="item.job_no"></el-option>
@@ -25,6 +14,21 @@
                 <el-option v-for="(item, index) in hr_level" :key="index" :label="item.level_name" :value="item.level_no"></el-option>
             </el-select>
         </el-form-item>
+
+        <el-form-item label="选择表">
+            <el-col :span="6">
+                <el-button class="w-100" @click="getExcelInfo()">单击选择要导入的数据文件</el-button>
+            </el-col>
+            <el-col :span="2">
+              <label for="">>>></label>
+            </el-col>
+            <el-col :span="16">
+                <el-select v-model="sheet_index" placeholder="请选择要操作的数据表" class="w-100">
+                    <el-option v-for="(item, index) in excel_info" :key="index" :label="item.name" :value="index"></el-option>
+                </el-select>
+            </el-col>
+        </el-form-item>
+
         <template v-if="sheet_index !== null">
             <el-form-item label="姓名">
                 <el-select v-model="field.real_name_index" placeholder="请选择姓名列" class="w-100">
@@ -66,7 +70,7 @@
             <el-input
                 type="textarea"
                 :rows="10"
-                placeholder="请输入内容"
+                placeholder="操作日志输出"
                 v-model="output">
             </el-input>
         </el-form-item>
@@ -154,25 +158,6 @@ export default {
       this.output += '操作完成，准备资源释放\r\n'
       // this.ipcRenderer.removeAllListeners('addHr')
       this.output += 'End'
-      /* {
-        real_name: '',
-        mobile_phone: '',
-        id_number: '',
-        address: '',
-        bank_of_deposit: '',
-        bank_account: '',
-        job_no: '',
-        level: ''
-      } */
-      /* this.ipcRenderer.send('addHr', this.form)
-      this.ipcRenderer.once('addHr', (_event, res) => {
-        console.log('addHr', res)
-        if (res === 20100) {
-          this.$message.success('添加完成')
-        } else {
-          this.$message.error(res.msg)
-        }
-      }) */
     }
   },
   created () {

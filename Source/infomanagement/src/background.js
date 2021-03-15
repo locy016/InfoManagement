@@ -14,7 +14,7 @@ const { dialog } = require('electron')
 const Menu = electron.Menu
 const globalShortcut = electron.globalShortcut
 // 引用fs，基于Node.js解析文件
-// const fs = require('fs')
+const fs = require('fs')
 // 引用node-xlsx，基于Node.js解析excel文件数据及生成excel文件
 const xlsx = require('node-xlsx')
 let win
@@ -179,8 +179,13 @@ ipcMain.on('addHr', (event, json) => {
 })
 ipcMain.on('getExcelInfo', (event) => {
   dialog.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'Custom File Type', extensions: ['xls', 'xlsx'] }] }).then(res => {
-    let xls = xlsx.parse(res.filePaths[0])
-    event.sender.send('getExcelInfo', xls)
+    console.log('file',res,JSON.stringify(res))
+    if (res.canceled) {
+      // 取消文件选择
+    } else {
+      let xls = xlsx.parse(res.filePaths[0])
+      event.sender.send('getExcelInfo', xls)
+    }
   }).catch(_err => {
     console.log('err', _err)
   })
@@ -210,3 +215,38 @@ ipcMain.on('delProject', (event, json) => {
     event.sender.send('delProject', res)
   })
 })
+ipcMain.on('outExcel', (event, obj) => {
+  if (obj) {
+    dialog.showSaveDialog({ properties: ['createDirectory '] }).then(res => {
+      if (res.canceled) {
+        // 取消保存事件
+      } else {
+        // 自定义表结构
+        var data = [{ name: 'Sheet1', data:[] }]
+        data[0].data = [['工种','姓名','身份证号','工资标准','工作日期','合计工期','联系方式','住址','开户行','银行账号']]
+        // 添加表内容
+        obj.details.forEach(item => {
+          let _array = JSON.parse('[' + item.date_array + ']')
+          let fromatDataArray = []
+          _array.forEach(item => {
+            fromatDataArray.push(formatShortDate(item)) 
+          })
+          
+          data[0].data.push([item.job_name, item.real_name, item.id_number, item.wages, fromatDataArray, item.day_count, item.mobile_phone, item.address, item.bank_of_deposit, (item.bank_account).toString()])
+        })
+        // 输出数据
+        console.log('data', data)
+        fs.writeFileSync(res.filePath + '.xlsx', xlsx.build(data), {'flag':'w'})
+      }
+    }).catch(_err => {
+      console.log('_err', _err)
+    })
+  }
+})
+function formatShortDate(datetime) {
+  let currDate = new Date(datetime)
+  let year = currDate.getFullYear()
+  let month = ((currDate.getMonth() + 1).toString().length > 1) ? currDate.getMonth() + 1 : '0' + (currDate.getMonth() + 1)
+  let day = (currDate.getDate().toString().length > 1) ? currDate.getDate() : '0' + currDate.getDate()
+  return year + '/' + month + '/' + day
+}

@@ -81,7 +81,7 @@ export function addHr (json, callback) {
 }
 
 export function getSelectHrList (jobNo, callback) {
-  let sql = 'select t_hr.[real_name], [mobile_phone], t_hr.[id_number], [address], [bank_of_deposit], [bank_account], t_hr.[job_no], t_job.[job_name], t_job.pay, level, t_hr_level.[level_name], [use_flag], [del_flag], [create_time], t_hr_working.[project_no], t_hr_working.[start_date], t_hr_working.[end_date], t_project_details.[date_array] from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no left join t_hr_working on t_hr.[id_number] = t_hr_working.[id_number] left join t_project_details on t_project_details.[id_number] = t_hr_working.[id_number] and t_hr_working.[project_no] = t_project_details.project_no '
+  let sql = 'select t_hr.[real_name], [mobile_phone], t_hr.[id_number], [address], [bank_of_deposit], [bank_account], t_hr.[job_no], t_job.[job_name], t_job.pay, level, t_hr_level.[level_name], [use_flag], [del_flag], [create_time], t_hr_working.[project_no], t_hr_working.[start_date], t_hr_working.[end_date], t_project_details.[date_array] last_date_array from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no left join t_hr_working on t_hr.[id_number] = t_hr_working.[id_number] left join t_project_details on t_project_details.[id_number] = t_hr_working.[id_number] and t_hr_working.[project_no] = t_project_details.project_no '
   if (jobNo) {
     sql += 'where t_hr.job_no = "' + jobNo + '"'
   }
@@ -116,7 +116,7 @@ export function getProjectList (callback) {
 }
 
 export function getProjectDetails (projectNo, callback) {
-  let sql = 'select job_name, real_name, id_number, wages, date_array, day_count from t_project_details where project_no = "' + projectNo + '"'
+  let sql = 'select job_name, t_project_details.real_name, t_project_details.id_number, t_project_details.wages, t_project_details.date_array, t_project_details.day_count, t_hr.mobile_phone, t_hr.address, t_hr.bank_of_deposit, t_hr.bank_account from t_project_details left join t_hr on t_project_details.id_number = t_hr.id_number where project_no = "' + projectNo + '"'
   db.all(sql, function (_err, row) {
     callback(row)
   })
