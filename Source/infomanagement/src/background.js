@@ -4,7 +4,7 @@ import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 // eslint-disable-next-line no-unused-vars
-import { getBaseInfo, setBaseInfo, getJobTypeList, getJobList, chkHr, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, getProjectDetails, addProject, getProjectList, delProject } from './data-driven.js'
+import { getBaseInfo, setBaseInfo, getJobTypeList, getJobList, chkHr, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, getHrWorkLog, getProjectDetails, addProject, getProjectList, delProject } from './data-driven.js'
 // import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -205,6 +205,11 @@ ipcMain.on('getSelectHrList', (event, jobNo) => {
     event.sender.send('getSelectHrList', res)
   })
 })
+ipcMain.on('getHrWorkLog', (event, idNumber) => {
+  getHrWorkLog(idNumber, res => {
+    event.sender.send('getHrWorkLog', res)
+  })
+})
 ipcMain.on('addProject', (event, json) => {
   addProject(json, res => {
     event.sender.send('addProject', res)
@@ -243,7 +248,7 @@ ipcMain.on('outExcel', (event, obj) => {
     })
   }
 })
-function formatShortDate(datetime) {
+function formatShortDate (datetime) {
   let currDate = new Date(datetime)
   let year = currDate.getFullYear()
   let month = ((currDate.getMonth() + 1).toString().length > 1) ? currDate.getMonth() + 1 : '0' + (currDate.getMonth() + 1)

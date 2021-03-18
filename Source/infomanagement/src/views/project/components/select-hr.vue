@@ -16,8 +16,19 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-col :span="16">
-          <el-button class="w-100" type="primary" plain>检索符合条件人员</el-button>
+        <el-col :span="4">
+          <el-date-picker type="date" placeholder="选择日期" style="width: 100%;"></el-date-picker>
+        </el-col>
+        <el-col :span="4">
+          <el-date-picker type="date" placeholder="选择日期" style="width: 100%;"></el-date-picker>
+        </el-col>
+        <el-col :span="4">
+          <el-input placeholder="人数">
+            <template slot="append">人</template>
+          </el-input>
+        </el-col>
+        <el-col :span="4">
+          <el-button class="w-100" type="primary" disabled plain>检索符合条件人员(开发中)</el-button>
         </el-col>
       </el-row>
     </div>
@@ -70,7 +81,26 @@
             <el-table-column
                 width="120"
                 prop="start_date"
-                label="项目开始">
+                label="施工记录">
+                <template slot-scope="scope">
+                  <!-- <el-button type="text" @click="getLog(scope.row.id_number)">点击查询</el-button> -->
+                  <el-popover
+                    placement="left"
+                    width="400"
+                    trigger="click">
+                    <div>
+                      <ul>
+                        <li v-for="(item, index) in resultLog" :key="index">{{'项目:'+item.project_name+'(工作'+item.day_count+'天)'}}:{{formatShortDate(item.start_date)}}-{{formatShortDate(item.end_date)}}</li>
+                      </ul>
+                    </div>
+                    <el-button slot="reference" type="text" @click="getLog(scope.row.id_number)">点击查询</el-button>
+                  </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column
+                width="120"
+                prop="start_date"
+                label="最后施工">
                 <template slot-scope="scope">
                   <p>{{ (scope.row.create_time) ? formatShortDate(scope.row.create_time) : '空' }}</p>
                 </template>
@@ -124,7 +154,8 @@ export default {
       tableData: [],
       job_value: null,
       jobData: [],
-      multipleSelection: []
+      multipleSelection: [],
+      resultLog: null
     }
   },
   watch: {
@@ -151,6 +182,13 @@ export default {
       this.ipcRenderer.once('getJobList', (event, res) => {
         console.log('getJobList', res)
         this.jobData = res
+      })
+    },
+    getLog (idNumber) {
+      this.ipcRenderer.send('getHrWorkLog', idNumber)
+      this.ipcRenderer.once('getHrWorkLog', (event, res) => {
+        console.log('getHrWorkLog', res)
+        this.resultLog = res
       })
     },
     handleSelectionChange (val) {

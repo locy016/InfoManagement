@@ -90,6 +90,14 @@ export function getSelectHrList (jobNo, callback) {
   })
 }
 
+export function getHrWorkLog (idNumber, callback) {
+  let sql = 'select real_name, date_array, day_count, project_name, start_date, end_date from t_project_details left join t_project_dispatch on t_project_details.project_no = t_project_dispatch.project_no where id_number = "' + idNumber + '"'
+  console.log(sql)
+  db.all(sql, function (_err, row) {
+    callback(row)
+  })
+}
+
 export function addProject (json, callback) {
   // 插入信息
   let sql = db.prepare('insert into t_project_dispatch (project_no, project_name, project_address, project_range, construction_unit, employer_unit, project_price, tax_rate, start_date, end_date) values ("' + json.project_no + '","' + json.project_name + '","' + json.project_address + '","' + json.project_range + '","' + json.construction_unit + '","' + json.employer_unit + '",' + json.project_price + ',' + json.tax_rate + ',"' + json.start_date + '","' + json.end_date + '")')
@@ -130,4 +138,4 @@ export function delProject (json, callback) {
   callback(sql)
 }
 
-export default { getBaseInfo, getJobTypeList, getJobList, chkHr, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, addProject, getProjectList, getProjectDetails, delProject }
+export default { getBaseInfo, getJobTypeList, getJobList, chkHr, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, getHrWorkLog, addProject, getProjectList, getProjectDetails, delProject }
