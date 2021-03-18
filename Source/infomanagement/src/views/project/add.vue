@@ -1,26 +1,46 @@
 <template>
   <div class="add-project">
-    <h1>This is an add project page</h1>
+    <h1>创建一个新的派工单</h1>
     <div class="m-4">
       <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="合同号">
-          <el-col :span="10">
-            <el-input v-model="form.project_no"></el-input>
+        <el-divider content-position="left">项目信息</el-divider>
+
+        <el-form-item>
+          <el-col :span="2">
+            <label for="">编号</label>
           </el-col>
           <el-col :span="4">
-            <label for="">项目名称</label>
+            <el-input v-model="form.project_no"></el-input>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="2">
+            <label for="">名称</label>
+          </el-col>
+          <el-col :span="4">
              <el-input v-model="form.project_name"></el-input>
           </el-col>
+          <el-col :span="2">
+            <label for="">开始日期</label>
+          </el-col>
+          <el-col :span="4">
+            <el-date-picker type="date" placeholder="选择日期" v-model="form.start_date" style="width: 100%;"></el-date-picker>
+          </el-col>
+          <el-col :span="2">
+            <label for="">结束日期</label>
+          </el-col>
+          <el-col :span="4">
+            <el-date-picker type="date" placeholder="选择日期" v-model="form.end_date" style="width: 100%;"></el-date-picker>
+          </el-col>
         </el-form-item>
-        <el-form-item label="项目地点">
+
+        <el-divider content-position="left">人员操作</el-divider>
+
+        <el-form-item v-show="false" label="项目地点">
             <el-input v-model="form.project_address"></el-input>
         </el-form-item>
-        <el-form-item label="承包范围">
+        <el-form-item v-show="false" label="承包范围">
             <el-input v-model="form.project_range"></el-input>
         </el-form-item>
-        <el-form-item label="施工单位">
+        <el-form-item v-show="false" label="施工单位">
           <el-col :span="10">
             <el-input v-model="form.construction_unit"></el-input>
           </el-col>
@@ -31,7 +51,7 @@
             <el-input v-model="form.employer_unit"></el-input>
           </el-col>
         </el-form-item>
-        <el-form-item label="工程价款">
+        <el-form-item v-show="false" label="工程价款">
           <el-col :span="10">
             <el-input type="number" v-model="form.project_price"></el-input>
           </el-col>
@@ -45,23 +65,18 @@
             <label for="">%</label>
           </el-col>
         </el-form-item>
-        <el-form-item label="开始日期">
-          <el-col :span="10">
-            <el-date-picker type="date" placeholder="选择日期" v-model="form.start_date" style="width: 100%;"></el-date-picker>
-          </el-col>
-          <el-col :span="4">
-            <label for="">结束日期</label>
-          </el-col>
-          <el-col :span="10">
-            <el-date-picker type="date" placeholder="选择日期" v-model="form.end_date" style="width: 100%;"></el-date-picker>
-          </el-col>
-        </el-form-item>
 
-        <el-form-item>
-          <el-button class="w-100" @click="dialogVisible = true">选择人员</el-button>
-        </el-form-item>
+        <div class="m-4 p-4 text-left">
+          <el-form-item>
+            <el-button class="btn-block" type="info" @click="dialogVisible = true" icon="el-icon-circle-plus-outline" plain>已选 {{ form.detailData.length }} 人</el-button>
+            <el-button class="btn-block" type="primary" v-for="(value, key, index) in detailDataCount" :key="index" plain> {{ key }} {{ value }} 人</el-button>
+          </el-form-item>
+        </div>
 
-        <div class="mt-2">
+        <el-divider content-position="left">人员列表</el-divider>
+
+        <div class="m-4 p-4 ">
+          <el-form-item>
           <el-table
             :data="form.detailData"
             style="width: 100%">
@@ -74,6 +89,20 @@
                 label="姓名">
             </el-table-column>
             <el-table-column
+                prop="id_number"
+                label="性别">
+                <template slot-scope="scope">
+                  {{ (scope.row.id_number.substr(16,1) % 2 === 1) ? '男' : '女' }}
+                </template>
+            </el-table-column>
+            <el-table-column
+                prop="id_number"
+                label="年龄">
+                <template slot-scope="scope">
+                  {{ calculateAge(scope.row.id_number.substr(6,8)) }}
+                </template>
+            </el-table-column>
+            <el-table-column
                 width="170"
                 prop="id_number"
                 label="身份证号">
@@ -83,13 +112,13 @@
                 label="工资/天">
             </el-table-column>
             <el-table-column
-                width="100"
+                width="220"
                 prop="date_array"
                 label="施工日期">
                 <template slot-scope="scope">
                   <el-date-picker
                     type="dates"
-                    style="width:90px;"
+                    style="width:200px;"
                     v-model="scope.row.date_array"
                     placeholder="选择"
                     value-format="timestamp">
@@ -99,7 +128,7 @@
             </el-table-column>
 
             <el-table-column
-                width="80"
+                width="100"
                 prop="date_array"
                 label="时长/天">
                 <template slot-scope="scope">
@@ -116,10 +145,11 @@
               </template>
             </el-table-column> -->
           </el-table>
+          </el-form-item>
         </div>
 
         <el-form-item>
-          <el-button type="primary" class="w-100" @click="onSubmit">立即创建</el-button>
+          <el-button type="primary" class="w-75" @click="onSubmit">立即创建</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -147,16 +177,17 @@ export default {
       form: {
         project_no: null,
         project_name: null,
-        project_address: null,
-        project_range: null,
-        construction_unit: null,
-        employer_unit: null,
+        project_address: '略',
+        project_range: '略',
+        construction_unit: '略',
+        employer_unit: '略',
         project_price: 0,
         tax_rate: 0,
         start_date: null,
         end_date: null,
         detailData: []
       },
+      detailDataCount: {},
       dialogVisible: false
     }
   },
@@ -164,6 +195,16 @@ export default {
     'form.detailData': {
       handler (val) {
         console.log('form.detailData', this.form.detailData)
+        // 清空已计算的数值
+        this.detailDataCount = {}
+        // 循环判断
+        this.form.detailData.forEach(item => {
+          if (this.detailDataCount.hasOwnProperty(item.job_name) > 0) {
+            this.detailDataCount[item.job_name] = this.detailDataCount[item.job_name] + 1
+          } else {
+            this.detailDataCount[item.job_name] = 1
+          }
+        })
       },
       deep: true
     }
@@ -173,15 +214,34 @@ export default {
     init () {},
     delClick (row) {},
     onSubmit () {
-      this.ipcRenderer.send('addProject', this.form)
-      this.ipcRenderer.once('addProject', (_event, res) => {
-        console.log('addProject', res)
-        if (JSON.stringify(res) === '{}') {
-          this.$message.success('添加完成')
-        } else {
-          this.$message.error(res)
-        }
-      })
+      let checkPassed = true
+
+      try {
+        this.form.detailData.forEach(element => {
+          if (!element.date_array) {
+            checkPassed = false
+            throw element.real_name + '施工日期不能为空'
+          }
+          if (!element.day_count) {
+            checkPassed = false
+            throw element.real_name + '工作时长不能为空'
+          }
+        })
+      } catch (e) {
+        this.$message.error(e)
+      }
+
+      if (checkPassed) {
+        this.ipcRenderer.send('addProject', this.form)
+        this.ipcRenderer.once('addProject', (_event, res) => {
+          console.log('addProject', res)
+          if (JSON.stringify(res) === '{}') {
+            this.$message.success('添加完成')
+          } else {
+            this.$message.error(res)
+          }
+        })
+      }
     }
   },
   created () {
@@ -190,3 +250,12 @@ export default {
   beforeDestroy () { }
 }
 </script>
+
+<style scoped>
+.btn-block{
+  margin: 2;
+  width: 12%;
+  height: 110px;
+  border-radius: 20px;
+}
+</style>

@@ -1,117 +1,87 @@
 <template>
   <div class="hr">
-    <h1>This is an hr list page</h1>
+    <h1>人员信息管理</h1>
+    <div class="w-100">
+      <div class="m-4">
+        <el-tag class="job-box" @click="getHrList"><b>全部</b></el-tag>
+        <el-tag class="job-box" v-for="(item, index) in jobData" :key="index">
+          <small @click="getHrListByJobNo(item.job_no)"
+            >{{ item.job_name }} ({{ item.job_count }}人)</small
+          >
+        </el-tag>
+      </div>
+    </div>
+    <div class="w-100">
+      <small>人资信息查询结果，共有 <b>{{ tableData.length }}</b> 条记录</small>
+    </div>
+    <div class="w-100">
+      <div class="m-4">
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-column sortable prop="real_name" label="姓名">
+          </el-table-column>
+          <el-table-column width="110" prop="mobile_phone" label="电话">
+          </el-table-column>
+          <el-table-column prop="id_number" label="性别">
+            <template slot-scope="scope">
+              {{ scope.row.id_number.substr(16, 1) % 2 === 1 ? "男" : "女" }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="id_number" label="年龄">
+            <template slot-scope="scope">
+              <span
+                :class="
+                  calculateAge(scope.row.id_number.substr(6, 8)) >= 60
+                    ? 'color-red'
+                    : ''
+                "
+              >
+                {{ calculateAge(scope.row.id_number.substr(6, 8)) }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column width="170" prop="id_number" label="身份证号">
+          </el-table-column>
+          <el-table-column sortable width="90" prop="job_name" label="工种">
+          </el-table-column>
+          <el-table-column sortable prop="level_name" label="级别">
+          </el-table-column>
+          <el-table-column prop="address" label="住址">
+            <template slot-scope="scope">
+              <el-tooltip class="item" effect="dark" placement="top">
+                <div slot="content">
+                  <label for="">{{ scope.row.address }}</label>
+                </div>
+                <i class="el-icon-view"></i>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <el-table-column prop="bank_of_deposit" label="开户行">
+            <template slot-scope="scope">
+              <el-tooltip class="item" effect="dark" placement="top">
+                <div slot="content">
+                  <label for="">{{ scope.row.bank_of_deposit }}</label>
+                </div>
+                <i class="el-icon-view"></i>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <el-table-column prop="bank_account" label="银行卡号">
+            <template slot-scope="scope">
+              <el-tooltip class="item" effect="dark" placement="top">
+                <div slot="content">
+                  <label for="">{{ scope.row.bank_account }}</label>
+                </div>
+                <i class="el-icon-view"></i>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <el-table-column prop="create_time" label="创建时间">
+            <template slot-scope="scope">
+              <p>{{ formatShortDate(scope.row.create_time) }}</p>
+            </template>
+          </el-table-column>
 
-    <el-row>
-      <el-col :span="3">
-        <div class="ml-4 text-left">
-          <p>
-            <small @click="getHrList"><b>全部</b></small>
-          </p>
-          <!-- <span>{{jobData}}</span> -->
-        </div>
-        <div class="ml-4 text-left">
-          <p v-for="(item, index) in jobData" :key="index">
-            <small @click="getHrListByJobNo(item.job_no)">{{item.job_name}} ({{item.job_count}})</small>
-          </p>
-          <!-- <span>{{jobData}}</span> -->
-        </div>
-      </el-col>
-      <el-col :span="21">
-        <div class="">
-          <div class="ml-4 p-2 text-left">
-            <small>人资信息查询结果，共有 <b>{{ tableData.length }}</b> 条记录</small>
-          </div>
-          <el-table
-              :data="tableData"
-              style="width: 100%">
-              <el-table-column
-                  sortable
-                  prop="real_name"
-                  label="姓名">
-              </el-table-column>
-              <el-table-column
-                  width="110"
-                  prop="mobile_phone"
-                  label="电话">
-              </el-table-column>
-              <el-table-column
-                  prop="id_number"
-                  label="性别">
-                  <template slot-scope="scope">
-                    {{ (scope.row.id_number.substr(16,1) % 2 === 1) ? '男' : '女' }}
-                  </template>
-              </el-table-column>
-              <el-table-column
-                  prop="id_number"
-                  label="年龄">
-                  <template slot-scope="scope">
-                    <span :class="(calculateAge(scope.row.id_number.substr(6,8)) >= 60) ? 'color-red' : ''">
-                      {{ calculateAge(scope.row.id_number.substr(6,8)) }}
-                    </span>
-                  </template>
-              </el-table-column>
-              <el-table-column
-                  width="170"
-                  prop="id_number"
-                  label="身份证号">
-              </el-table-column>
-              <el-table-column
-                  sortable
-                  width="90"
-                  prop="job_name"
-                  label="工种">
-              </el-table-column>
-              <el-table-column
-                  sortable
-                  prop="level_name"
-                  label="级别">
-              </el-table-column>
-              <el-table-column
-                  prop="address"
-                  label="住址">
-                  <template slot-scope="scope">
-                    <el-tooltip class="item" effect="dark" placement="top">
-                      <div slot="content">
-                        <label for="">{{ scope.row.address }}</label>
-                      </div>
-                      <i class="el-icon-view"></i>
-                    </el-tooltip>
-                  </template>
-              </el-table-column>
-              <el-table-column
-                  prop="bank_of_deposit"
-                  label="开户行">
-                  <template slot-scope="scope">
-                    <el-tooltip class="item" effect="dark" placement="top">
-                      <div slot="content">
-                        <label for="">{{ scope.row.bank_of_deposit }}</label>
-                      </div>
-                      <i class="el-icon-view"></i>
-                    </el-tooltip>
-                  </template>
-              </el-table-column>
-              <el-table-column
-                  prop="bank_account"
-                  label="银行卡号">
-                  <template slot-scope="scope">
-                    <el-tooltip class="item" effect="dark" placement="top">
-                      <div slot="content">
-                        <label for="">{{ scope.row.bank_account }}</label>
-                      </div>
-                      <i class="el-icon-view"></i>
-                    </el-tooltip>
-                  </template>
-              </el-table-column>
-              <el-table-column
-                  prop="create_time"
-                  label="创建时间">
-                  <template slot-scope="scope">
-                    <p>{{ formatShortDate(scope.row.create_time) }}</p>
-                  </template>
-              </el-table-column>
-
-              <!-- <el-table-column
+          <!-- <el-table-column
                 fixed="right"
                 label="操作"
                 width="100">
@@ -119,11 +89,9 @@
                   <el-button @click="delClick(scope.row)" type="text" size="small">删除</el-button>
                 </template>
               </el-table-column> -->
-          </el-table>
-        </div>
-      </el-col>
-    </el-row>
-
+        </el-table>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -162,9 +130,7 @@ export default {
         this.jobData = res
       })
     },
-    delClick (row) {
-
-    }
+    delClick (row) {}
   },
   created () {
     this.init()
@@ -175,3 +141,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.job-box {
+  margin: 1%;
+  width: 13%;
+  border-radius: 15px;
+  box-shadow: 1px 2px 1px rgba(28, 189, 199, 0.5);
+  color: aliceblue;
+  font-size: 1.1rem;
+  background: rgba(28, 189, 199, 1);
+}
+</style>

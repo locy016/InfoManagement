@@ -338,3 +338,6 @@ el-table th,
   text-overflow: ellipsis;
   overflow: hidden;
 }
+.block{
+  display: block;
+}

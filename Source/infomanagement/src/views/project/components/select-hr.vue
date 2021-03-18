@@ -17,7 +17,7 @@
           </el-select>
         </el-col>
         <el-col :span="16">
-          <el-button class="w-100" @click="onUpd" type="primary" plain>更新人员名单</el-button>
+          <el-button class="w-100" type="primary" plain>检索符合条件人员</el-button>
         </el-col>
       </el-row>
     </div>
@@ -30,6 +30,10 @@
             <el-table-column
                 type="selection"
                 width="55">
+            </el-table-column>
+            <el-table-column
+                prop="level_name"
+                label="级别">
             </el-table-column>
             <el-table-column
                 prop="real_name"
@@ -62,10 +66,6 @@
             <el-table-column
                 prop="job_name"
                 label="工种">
-            </el-table-column>
-            <el-table-column
-                prop="level_name"
-                label="级别">
             </el-table-column>
             <el-table-column
                 width="120"
@@ -107,6 +107,9 @@
 
         </el-table>
     </div>
+    <div class="m-2">
+      <el-button class="w-100" @click="onUpd" type="primary" >添加所选人员名单</el-button>
+    </div>
     <div class="mt-4">
       <span>当前已选择 <b>{{ multipleSelection.length }}</b> 人</span>
     </div>
@@ -121,7 +124,7 @@ export default {
       tableData: [],
       job_value: null,
       jobData: [],
-      multipleSelection: this.dataSource
+      multipleSelection: []
     }
   },
   watch: {
@@ -140,7 +143,6 @@ export default {
     getSelectHrList (jobNo) {
       this.ipcRenderer.send('getSelectHrList', jobNo)
       this.ipcRenderer.once('getSelectHrList', (event, res) => {
-        console.log('res', res)
         this.tableData = res
       })
     },
@@ -156,7 +158,7 @@ export default {
     },
     onUpd () {
       // this.dataSource = this.multipleSelection
-      this.$emit('update:dataSource', this.multipleSelection)
+      this.$emit('update:dataSource', [...this.dataSource, ...this.multipleSelection])
       this.$emit('update:show', false)
     }
   },
