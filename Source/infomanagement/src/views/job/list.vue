@@ -1,7 +1,7 @@
 <template>
   <div class="hr-list">
     <h1>This is an hr list page</h1>
-    <div class="m-4">
+    <div class="m-4 p-4">
         <el-table
             :data="tableData"
             style="width: 100%">

@@ -1,7 +1,7 @@
 <template>
   <div class="job-type">
     <h1>This is an job type page</h1>
-    <div class="m-4">
+    <div class="m-4 p-4">
         <el-table
             :data="tableData"
             style="width: 100%">
@@ -35,17 +35,15 @@ export default {
   methods: {
     init () {
       this.ipcRenderer.send('getJobTypeList')
-      this.ipcRenderer.on('getJobTypeList', (event, res) => {
+      this.ipcRenderer.once('getJobTypeList', (event, res) => {
         console.log('getJobTypeList', res)
         this.tableData = res
       })
     }
   },
-  created () {
+  mounted () {
     this.init()
   },
-  beforeDestroy () {
-    this.ipcRenderer.removeAllListeners('getJobTypeList')
-  }
+  beforeDestroy () { }
 }
 </script>
