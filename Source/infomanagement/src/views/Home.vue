@@ -1,19 +1,25 @@
 <template>
   <div class="home">
-    <h1>Home</h1>
-    <div>
+    <h1>系统概述</h1>
+    <div class="m-4">
       <div class="m-1">
-        <el-tag type="success">{{ info.software_name }}</el-tag>
+        <el-alert :title="info.software_name" type="success" :close-text="info.version_number"></el-alert>
       </div>
-      <div class="m-1">
-        <el-tag type="danger">{{ info.version_number }}</el-tag>
-      </div>
-      <div class="m-1">
-        <el-tag type="info">{{ info.author }}</el-tag>
-      </div>
-      <div class="m-1">
-        <el-tag type="warning">{{ info.contact }}</el-tag>
-      </div>
+    </div>
+    <div class="m-4">
+        <el-alert :title="info.contact" type="info" :close-text="info.author"></el-alert>
+    </div>
+    <div class="m-4">
+        <el-alert title="工种信息统计" type="warning" close-text="开发中"></el-alert>
+    </div>
+    <div class="m-4">
+        <el-alert title="工人信息统计" type="warning" close-text="开发中"></el-alert>
+    </div>
+    <div class="m-4">
+        <el-alert title="项目信息统计" type="warning" close-text="开发中"></el-alert>
+    </div>
+    <div class="m-4">
+        <el-alert title="人资信息统计" type="warning" close-text="开发中"></el-alert>
     </div>
   </div>
 </template>

@@ -17,18 +17,13 @@
           </el-select>
         </el-col>
         <el-col :span="4">
-          <el-date-picker type="date" placeholder="选择日期" style="width: 100%;"></el-date-picker>
+          <el-date-picker type="date" placeholder="选择日期" style="width: 100%;" v-model="start_date" disabled></el-date-picker>
         </el-col>
         <el-col :span="4">
-          <el-date-picker type="date" placeholder="选择日期" style="width: 100%;"></el-date-picker>
+          <el-date-picker type="date" placeholder="选择日期" style="width: 100%;" v-model="end_date" disabled></el-date-picker>
         </el-col>
-        <el-col :span="4">
-          <el-input placeholder="人数">
-            <template slot="append">人</template>
-          </el-input>
-        </el-col>
-        <el-col :span="4">
-          <el-button class="w-100" type="primary" disabled plain>检索符合条件人员(开发中)</el-button>
+        <el-col :span="8">
+          <el-button class="w-100" type="primary" @click="dateAnalysis()" plain>工期分析</el-button>
         </el-col>
       </el-row>
     </div>
@@ -41,6 +36,19 @@
             <el-table-column
                 type="selection"
                 width="55">
+            </el-table-column>
+            <el-table-column
+                prop="eligible"
+                label="可用标记">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.eligible">
+                    <i class="el-icon-circle-check color-success"></i>
+                    </template>
+                    <template v-else>
+                      <i class="el-icon-warning-outline color-gray"></i>
+                    </template>
+                  {{ scope.row.eligible }}
+                </template>
             </el-table-column>
             <el-table-column
                 prop="level_name"
@@ -93,7 +101,7 @@
                         <li v-for="(item, index) in resultLog" :key="index">{{'项目:'+item.project_name+'(工作'+item.day_count+'天)'}}:{{formatShortDate(item.start_date)}}-{{formatShortDate(item.end_date)}}</li>
                       </ul>
                     </div>
-                    <el-button slot="reference" type="text" @click="getLog(scope.row.id_number)">点击查询</el-button>
+                    <el-button slot="reference" type="text" @click="getLog(scope.row)">点击查询</el-button>
                   </el-popover>
                 </template>
             </el-table-column>
@@ -165,7 +173,7 @@ export default {
       }
     }
   },
-  props: ['dataSource', 'show'],
+  props: ['dataSource', 'show', 'start_date', 'end_date'],
   methods: {
     init () {
       this.getSelectHrList()
@@ -184,12 +192,42 @@ export default {
         this.jobData = res
       })
     },
-    getLog (idNumber) {
-      this.ipcRenderer.send('getHrWorkLog', idNumber)
+    getLog (row) {
+      this.ipcRenderer.send('getHrWorkLog', row.id_number)
       this.ipcRenderer.once('getHrWorkLog', (event, res) => {
         console.log('getHrWorkLog', res)
         this.resultLog = res
+        if (res.length > 0) {
+          res.forEach(element => {
+            if (this.dateCheck(this.start_date, this.end_date, element.start_date, element.end_date)) {
+              row.eligible = false
+            }
+          })
+        } else {
+          row.eligible = true
+        }
       })
+    },
+    dateCheck (start, end, istart, iend) {
+      // 项目开始日期
+      start = new Date(start).getTime()
+      // 项目结束日期
+      end = new Date(end).getTime()
+      // 工作开始日期
+      istart = new Date(istart).getTime()
+      // 工作结束日期
+      iend = new Date(iend).getTime()
+      // 判断工作开始时间是不是在项目日期内，是的话日期有冲突 && 判断工作结束日期是不是在项目日期内，是的话日期有冲突
+      if ((start >= istart && start <= iend) || (end >= istart && end <= iend)) {
+        console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '日期冲突，dateCheck', start, end, istart, iend)
+        return false
+      } else {
+        console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '日期允许，dateCheck', start, end, istart, iend)
+        return true
+      }
+    },
+    dateAnalysis () {
+
     },
     handleSelectionChange (val) {
       this.multipleSelection = val

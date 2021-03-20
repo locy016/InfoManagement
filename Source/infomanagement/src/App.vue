@@ -14,16 +14,14 @@
             <el-menu-item index="/job-type">工种类别</el-menu-item>
             <el-menu-item index="/job-add">添加工种</el-menu-item>
             <el-menu-item index="/job-list">工种管理</el-menu-item>
-            <el-menu-item index="/hr-add">添加人员</el-menu-item>
-            <el-menu-item index="/hr-import">导入人员</el-menu-item>
-            <el-menu-item index="/hr-list">人员列表</el-menu-item>
           </el-submenu>
-          <el-submenu index="3">
+          <el-menu-item index="/hr-list">人员管理</el-menu-item>
+          <el-submenu index="4">
             <template slot="title">我的工作台</template>
             <el-menu-item index="/project-add">添加项目</el-menu-item>
             <el-menu-item index="/project-list">项目列表</el-menu-item>
           </el-submenu>
-          <el-submenu index="4">
+          <el-submenu index="5">
             <template slot="title">帮助</template>
             <el-menu-item index="/about">关于</el-menu-item>
             <el-menu-item index="/">退出</el-menu-item>

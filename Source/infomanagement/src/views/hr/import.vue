@@ -75,6 +75,9 @@
             </el-input>
         </el-form-item>
       </el-form>
+      <div class="">
+        <el-button class="w-100" @click="listBtn()">人员管理</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -107,6 +110,9 @@ export default {
     init () {
       this.getJobList()
       this.getHrLevel()
+    },
+    listBtn () {
+      this.$router.push('/hr-list')
     },
     getJobList () {
       this.ipcRenderer.send('getJobList')

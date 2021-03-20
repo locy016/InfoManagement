@@ -1,9 +1,8 @@
 <template>
   <div class="add-project">
-    <h1>创建一个新的派工单</h1>
+    <h1>添加一个新的项目派工单</h1>
     <div class="m-4">
       <el-form ref="form" :model="form" label-width="80px">
-        <el-divider content-position="left">项目信息</el-divider>
 
         <el-form-item>
           <el-col :span="2">
@@ -32,7 +31,7 @@
           </el-col>
         </el-form-item>
 
-        <el-divider content-position="left">人员操作</el-divider>
+        <el-divider content-position="center">人员操作</el-divider>
 
         <el-form-item v-show="false" label="项目地点">
             <el-input v-model="form.project_address"></el-input>
@@ -68,12 +67,12 @@
 
         <div class="m-4 p-4 text-left">
           <el-form-item>
-            <el-button class="btn-block" type="info" @click="dialogVisible = true" icon="el-icon-circle-plus-outline" plain>已选 {{ form.detailData.length }} 人</el-button>
+            <el-button class="btn-block" type="info" @click="selectHr()" icon="el-icon-circle-plus-outline" plain>已选 {{ form.detailData.length }} 人</el-button>
             <el-button class="btn-block" type="primary" v-for="(value, key, index) in detailDataCount" :key="index" plain> {{ key }} {{ value }} 人</el-button>
           </el-form-item>
         </div>
 
-        <el-divider content-position="left">人员列表</el-divider>
+        <el-divider content-position="center">人员列表</el-divider>
 
         <div class="m-4 p-4 ">
           <el-form-item>
@@ -149,7 +148,8 @@
         </div>
 
         <el-form-item>
-          <el-button type="primary" class="w-75" @click="onSubmit">立即创建</el-button>
+          <el-button type="primary" class="w-50" @click="onSubmit">立即创建</el-button>
+          <el-button class="w-25" @click="listBtn()">工单管理</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -163,7 +163,7 @@
       close-on-click-modal
       close-on-press-escape
       show-close>
-        <selecthr v-if="dialogVisible" :dataSource.sync="form.detailData" :show.sync="dialogVisible"></selecthr>
+        <selecthr v-if="dialogVisible" :dataSource.sync="form.detailData" :show.sync="dialogVisible" :start_date="form.start_date" :end_date="form.end_date"></selecthr>
     </el-dialog>
   </div>
 </template>
@@ -212,6 +212,9 @@ export default {
   components: { selecthr },
   methods: {
     init () {},
+    listBtn () {
+      this.$router.push('/project-list')
+    },
     delClick (row) {},
     onSubmit () {
       let checkPassed = true
@@ -220,10 +223,12 @@ export default {
         this.form.detailData.forEach(element => {
           if (!element.date_array) {
             checkPassed = false
+            // eslint-disable-next-line no-throw-literal
             throw element.real_name + '施工日期不能为空'
           }
           if (!element.day_count) {
             checkPassed = false
+            // eslint-disable-next-line no-throw-literal
             throw element.real_name + '工作时长不能为空'
           }
         })
@@ -237,11 +242,31 @@ export default {
           console.log('addProject', res)
           if (JSON.stringify(res) === '{}') {
             this.$message.success('添加完成')
+            this.$router.push('/project-list')
           } else {
             this.$message.error(res)
           }
         })
       }
+    },
+    selectHr () {
+      if (!this.form.project_no) {
+        this.$message.error('先输入项目编号')
+        return
+      }
+      if (!this.form.project_name) {
+        this.$message.error('先输入项目名称')
+        return
+      }
+      if (!this.form.start_date) {
+        this.$message.error('先选择项目开始日期')
+        return
+      }
+      if (!this.form.end_date) {
+        this.$message.error('先选择项目结束日期')
+        return
+      }
+      this.dialogVisible = true
     }
   },
   created () {

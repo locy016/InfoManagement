@@ -184,7 +184,7 @@ ipcMain.on('addHr', (event, json) => {
 })
 ipcMain.on('getExcelInfo', (event) => {
   dialog.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'Custom File Type', extensions: ['xls', 'xlsx'] }] }).then(res => {
-    console.log('file',res,JSON.stringify(res))
+    console.log('file', res, JSON.stringify(res))
     if (res.canceled) {
       // 取消文件选择
     } else {
@@ -232,21 +232,21 @@ ipcMain.on('outExcel', (event, obj) => {
         // 取消保存事件
       } else {
         // 自定义表结构
-        var data = [{ name: 'Sheet1', data:[] }]
-        data[0].data = [['工种','姓名','身份证号','工资标准','工作日期','合计工期','联系方式','住址','开户行','银行账号']]
+        var data = [{ name: 'Sheet1', data: [] }]
+        data[0].data = [['工种', '姓名', '身份证号', '工资标准', '工作日期', '合计工期', '联系方式', '住址', '开户行', '银行账号']]
         // 添加表内容
         obj.details.forEach(item => {
           let _array = JSON.parse('[' + item.date_array + ']')
           let fromatDataArray = []
           _array.forEach(item => {
-            fromatDataArray.push(formatShortDate(item)) 
+            fromatDataArray.push(formatShortDate(item))
           })
-          
+
           data[0].data.push([item.job_name, item.real_name, item.id_number, item.wages, fromatDataArray, item.day_count, item.mobile_phone, item.address, item.bank_of_deposit, (item.bank_account).toString()])
         })
         // 输出数据
         console.log('data', data)
-        fs.writeFileSync(res.filePath + '.xlsx', xlsx.build(data), {'flag':'w'})
+        fs.writeFileSync(res.filePath + '.xlsx', xlsx.build(data), { 'flag': 'w' })
       }
     }).catch(_err => {
       console.log('_err', _err)

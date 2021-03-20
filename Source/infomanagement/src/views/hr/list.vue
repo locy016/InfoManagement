@@ -1,6 +1,14 @@
 <template>
   <div class="hr">
     <h1>人员信息管理</h1>
+
+    <div class="w-100">
+      <div class="m-4">
+        <el-button @click="addBtn()" plain round><b>添加人员</b></el-button>
+        <el-button @click="importBtn()" plain round><b>导入人员</b></el-button>
+      </div>
+    </div>
+
     <div class="m-4">
       <el-input placeholder="关键词" class="w-50" icon="search" v-model="schfilter">
         <template slot="prepend">搜索</template>
@@ -22,7 +30,7 @@
     <div class="pt-4 w-100">
       <small>人资信息查询结果，共有 <b>{{ tableData.length }}</b> 条记录</small>
     </div>
-    
+
     <div class="w-100">
       <div class="m-4">
         <el-table :data="tableData" style="width: 100%">
@@ -115,14 +123,20 @@ export default {
     }
   },
   watch: {
-    schfilter: function(val, oldval) {
-      
+    schfilter: function (val, oldval) {
+
     }
   },
   methods: {
     init () {
       this.getHrList()
       this.getJobCount()
+    },
+    addBtn () {
+      this.$router.push('/hr-add')
+    },
+    importBtn () {
+      this.$router.push('/hr-import')
     },
     getHrList () {
       this.ipcRenderer.send('getHrList')

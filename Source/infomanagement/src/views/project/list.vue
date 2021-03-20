@@ -1,6 +1,9 @@
 <template>
   <div class="project-list">
-    <h1>This is an project list page</h1>
+    <h1>这里列出了所有的已保存项目</h1>
+    <div class="m-4">
+      <el-button type="info" class="w-100" @click="addBtn()">添加一个新的项目派工单</el-button>
+    </div>
     <div class="m-4">
         <el-table
             :data="tableData"
@@ -101,6 +104,9 @@ export default {
   methods: {
     init () {
       this.getProjectList()
+    },
+    addBtn () {
+      this.$router.push('/project-add')
     },
     getProjectList () {
       this.ipcRenderer.send('getProjectList')

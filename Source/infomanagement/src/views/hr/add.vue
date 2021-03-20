@@ -33,7 +33,8 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" class="w-100" @click="onSubmit">立即创建</el-button>
+          <el-button type="primary" class="w-50" @click="onSubmit">立即创建</el-button>
+          <el-button class="w-25" @click="listBtn()">人员管理</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -65,6 +66,9 @@ export default {
     init () {
       this.getJobList()
       this.getHrLevel()
+    },
+    listBtn () {
+      this.$router.push('/hr-list')
     },
     getJobList () {
       this.ipcRenderer.send('getJobList')
