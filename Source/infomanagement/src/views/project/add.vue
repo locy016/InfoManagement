@@ -255,7 +255,7 @@ export default {
 .btn-block{
   margin: 2;
   width: 12%;
-  height: 110px;
+  height: 50px;
   border-radius: 20px;
 }
 </style>

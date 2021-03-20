@@ -45,8 +45,16 @@ export function getHrList (callback) {
     callback(row)
   })
 }
+
 export function getHrListByJobNo (jobNo, callback) {
   let sql = 'select real_name, mobile_phone, id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no where t_hr.job_no = "' + jobNo + '"'
+  db.all(sql, function (_err, row) {
+    callback(row)
+  })
+}
+
+export function getHrListBySearch (String, callback) {
+  let sql = 'select real_name, mobile_phone, id_number, address, bank_of_deposit, bank_account, t_hr.job_no, t_job.job_name, t_job.pay, level, t_hr_level.[level_name], use_flag, del_flag, create_time from t_hr left join t_hr_level on t_hr.level = t_hr_level.level_no left join t_job on t_hr.job_no = t_job.job_no where real_name like "%' + String + '%" or mobile_phone like "%' + String + '%" or id_number like "%' + String + '%" or address like "%' + String + '%"'
   db.all(sql, function (_err, row) {
     callback(row)
   })
@@ -138,4 +146,4 @@ export function delProject (json, callback) {
   callback(sql)
 }
 
-export default { getBaseInfo, getJobTypeList, getJobList, chkHr, addJob, delJob, getHrList, getHrListByJobNo, getJobCount, getHrLevel, addHr, getSelectHrList, getHrWorkLog, addProject, getProjectList, getProjectDetails, delProject }
+export default { getBaseInfo, getJobTypeList, getJobList, chkHr, addJob, delJob, getHrList, getHrListByJobNo, getHrListBySearch, getJobCount, getHrLevel, addHr, getSelectHrList, getHrWorkLog, addProject, getProjectList, getProjectDetails, delProject }

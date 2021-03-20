@@ -1,6 +1,13 @@
 <template>
   <div class="hr">
     <h1>人员信息管理</h1>
+    <div class="m-4">
+      <el-input placeholder="关键词" class="w-50" icon="search" v-model="schfilter">
+        <template slot="prepend">搜索</template>
+        <el-button slot="append" @click="getHrListBySearch()" icon="el-icon-search"></el-button>
+      </el-input>
+    </div>
+
     <div class="w-100">
       <div class="m-4">
         <el-tag class="job-box" @click="getHrList"><b>全部</b></el-tag>
@@ -11,9 +18,11 @@
         </el-tag>
       </div>
     </div>
-    <div class="w-100">
+
+    <div class="pt-4 w-100">
       <small>人资信息查询结果，共有 <b>{{ tableData.length }}</b> 条记录</small>
     </div>
+    
     <div class="w-100">
       <div class="m-4">
         <el-table :data="tableData" style="width: 100%">
@@ -101,7 +110,13 @@ export default {
   data () {
     return {
       tableData: [],
-      jobData: []
+      jobData: [],
+      schfilter: null
+    }
+  },
+  watch: {
+    schfilter: function(val, oldval) {
+      
     }
   },
   methods: {
@@ -120,6 +135,13 @@ export default {
       this.ipcRenderer.send('getHrListByJobNo', jobNo)
       this.ipcRenderer.once('getHrListByJobNo', (event, res) => {
         console.log('getHrListByJobNo', res)
+        this.tableData = res
+      })
+    },
+    getHrListBySearch () {
+      this.ipcRenderer.send('getHrListBySearch', this.schfilter)
+      this.ipcRenderer.once('getHrListBySearch', (event, res) => {
+        console.log('getHrListBySearch', res)
         this.tableData = res
       })
     },
