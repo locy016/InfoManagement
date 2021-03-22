@@ -160,6 +160,7 @@
       :destroy-on-close="true"
       width="90%"
       top="5rem"
+      :fullscreen="true"
       close-on-click-modal
       close-on-press-escape
       show-close>

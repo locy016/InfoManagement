@@ -16,18 +16,29 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="3">
           <el-date-picker type="date" placeholder="选择日期" style="width: 100%;" v-model="start_date" disabled></el-date-picker>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="3">
           <el-date-picker type="date" placeholder="选择日期" style="width: 100%;" v-model="end_date" disabled></el-date-picker>
         </el-col>
-        <el-col :span="8">
-          <el-button class="w-100" type="primary" @click="dateAnalysis()" plain>工期分析</el-button>
+        <el-col :span="6">
+          <el-input v-model="autoCheckUp.workCount">
+            <template slot="prepend">查询前</template>
+            <template slot="append">人</template>
+          </el-input>
+        </el-col>
+        <el-col :span="4">
+          <el-button class="w-100" type="primary" @click="dateAnalysis()" plain>
+            <label for="">工期分析</label>
+            <template v-if="autoCheckUp.autoStatus">
+              {{ autoCheckUp.currNumber }} / {{ autoCheckUp.workCount }}
+            </template>
+          </el-button>
         </el-col>
       </el-row>
     </div>
-    <div class="mt-2" style="height:350px;overflow-y:auto">
+    <div class="mt-2" style="height:500px;overflow-y:auto">
         <el-table
             :data="tableData"
             ref="multipleTable"
@@ -163,13 +174,31 @@ export default {
       job_value: null,
       jobData: [],
       multipleSelection: [],
-      resultLog: null
+      resultLog: null,
+      checkStatus: false,
+      autoCheckUp: {
+        autoStatus: false,
+        workCount: 0,
+        currNumber: 0
+      }
     }
   },
   watch: {
     job_value (newVal) {
       if (newVal) {
         this.getSelectHrList(newVal)
+      }
+    },
+    checkStatus (newVal) {
+      if (!newVal) {
+        if (this.autoCheckUp.autoStatus) {
+          if (this.autoCheckUp.currNumber < this.autoCheckUp.workCount) {
+            this.getLog(this.tableData[this.autoCheckUp.currNumber])
+            this.autoCheckUp.currNumber += 1
+          } else {
+            this.autoCheckUp.autoStatus = false
+          }
+        }
       }
     }
   },
@@ -180,19 +209,25 @@ export default {
       this.getJobList()
     },
     getSelectHrList (jobNo) {
+      if (jobNo) {
+        //
+      } else {
+        this.job_value = null
+      }
       this.ipcRenderer.send('getSelectHrList', jobNo)
       this.ipcRenderer.once('getSelectHrList', (event, res) => {
         this.tableData = res
+        this.autoCheckUp.workCount = res.length
       })
     },
     getJobList () {
       this.ipcRenderer.send('getJobList')
       this.ipcRenderer.once('getJobList', (event, res) => {
-        console.log('getJobList', res)
         this.jobData = res
       })
     },
     getLog (row) {
+      this.checkStatus = true
       this.ipcRenderer.send('getHrWorkLog', row.id_number)
       this.ipcRenderer.once('getHrWorkLog', (event, res) => {
         console.log('getHrWorkLog', res)
@@ -204,9 +239,17 @@ export default {
               _eligible = false
             }
           })
-          row.eligible = _eligible
+          if (_eligible) {
+            this.toggleSelection(row)
+            row.eligible = _eligible
+          } else {
+            row.eligible = _eligible
+          }
+          this.checkStatus = false
         } else {
           row.eligible = true
+          this.toggleSelection(row)
+          this.checkStatus = false
         }
       })
     },
@@ -236,9 +279,17 @@ export default {
       }
     },
     dateAnalysis () {
-      this.tableData.forEach(element => {
-        this.getLog(element)
-      })
+      if (this.autoCheckUp.autoStatus) {
+        this.autoCheckUp.autoStatus = false
+      } else {
+        this.autoCheckUp.autoStatus = true
+        // this.autoCheckUp.workCount = this.tableData.length
+        this.autoCheckUp.currNumber = 0
+        this.getLog(this.tableData[0])
+      }
+    },
+    toggleSelection (row) {
+      this.$refs.multipleTable.toggleRowSelection(row)
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
