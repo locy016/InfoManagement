@@ -198,11 +198,13 @@ export default {
         console.log('getHrWorkLog', res)
         this.resultLog = res
         if (res.length > 0) {
+          let _eligible = true
           res.forEach(element => {
-            if (this.dateCheck(this.start_date, this.end_date, element.start_date, element.end_date)) {
-              row.eligible = false
+            if (!this.dateCheck(this.start_date, this.end_date, element.start_date, element.end_date)) {
+              _eligible = false
             }
           })
+          row.eligible = _eligible
         } else {
           row.eligible = true
         }
@@ -218,16 +220,25 @@ export default {
       // 工作结束日期
       iend = new Date(iend).getTime()
       // 判断工作开始时间是不是在项目日期内，是的话日期有冲突 && 判断工作结束日期是不是在项目日期内，是的话日期有冲突
-      if ((start >= istart && start <= iend) || (end >= istart && end <= iend)) {
-        console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '日期冲突，dateCheck', start, end, istart, iend)
+      // 1.判断工作开始日期有没有在其他项目工期内
+      if (start <= istart && istart <= end) {
+        console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '冲突，工作开始日期正在进行其他项目，dateCheck')
+        console.log(this.formatShortDate(start), this.formatShortDate(end), this.formatShortDate(istart), this.formatShortDate(iend))
+        return false
+      } else if (start <= iend && iend <= end) {
+        console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '冲突，工作结束日期正在进行其他项目，dateCheck')
+        console.log(this.formatShortDate(start), this.formatShortDate(end), this.formatShortDate(istart), this.formatShortDate(iend))
         return false
       } else {
-        console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '日期允许，dateCheck', start, end, istart, iend)
+        console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '日期允许，dateCheck')
+        console.log(this.formatShortDate(start), this.formatShortDate(end), this.formatShortDate(istart), this.formatShortDate(iend))
         return true
       }
     },
     dateAnalysis () {
-
+      this.tableData.forEach(element => {
+        this.getLog(element)
+      })
     },
     handleSelectionChange (val) {
       this.multipleSelection = val

@@ -6,6 +6,9 @@
         <el-alert :title="info.software_name" type="success" :close-text="info.version_number"></el-alert>
       </div>
     </div>
+    <div class="m-4 p-4">
+      <el-button type="primary" @click="prBtn()">添加项目派工单</el-button>
+    </div>
     <div class="m-4">
         <el-alert :title="info.contact" type="info" :close-text="info.author"></el-alert>
     </div>
@@ -39,6 +42,9 @@ export default {
         console.log('getBaseInfo', res)
         this.info = res
       })
+    },
+    prBtn () {
+      this.$router.push('/project-add')
     }
   },
   created () {
