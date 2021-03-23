@@ -2,17 +2,17 @@
   <div class="add-project">
     <h1>录入派工单信息</h1>
     <div class="m-4">
-      <el-form ref="form" :model="form" label-width="80px">
+      <el-form ref="form" :model="form">
 
         <el-form-item>
           <el-col :span="2">
-            <label for="">编号</label>
+            <label for="">合同编号</label>
           </el-col>
           <el-col :span="4">
             <el-input v-model="form.project_no"></el-input>
           </el-col>
           <el-col :span="2">
-            <label for="">名称</label>
+            <label for="">合同名称</label>
           </el-col>
           <el-col :span="4">
              <el-input v-model="form.project_name"></el-input>
@@ -30,8 +30,6 @@
             <el-date-picker type="date" placeholder="选择日期" v-model="form.end_date" style="width: 100%;"></el-date-picker>
           </el-col>
         </el-form-item>
-
-        <el-divider content-position="center">人员操作</el-divider>
 
         <el-form-item v-show="false" label="项目地点">
             <el-input v-model="form.project_address"></el-input>
@@ -65,14 +63,14 @@
           </el-col>
         </el-form-item>
 
+        <el-divider content-position="center">人员列表</el-divider>
+
         <div class="m-4 p-4 text-left">
           <el-form-item>
-            <el-button class="btn-block" type="info" @click="selectHr()" icon="el-icon-circle-plus-outline" plain>已选 {{ form.detailData.length }} 人</el-button>
+            <el-button class="btn-block" type="info" @click="selectHr()" icon="el-icon-circle-plus-outline" plain>添加人员, 已选 {{ form.detailData.length }} 人</el-button>
             <el-button class="btn-block" type="primary" v-for="(value, key, index) in detailDataCount" :key="index" plain> {{ key }} {{ value }} 人</el-button>
           </el-form-item>
         </div>
-
-        <el-divider content-position="center">人员列表</el-divider>
 
         <div class="m-4 p-4 ">
           <el-form-item>
@@ -120,6 +118,7 @@
                     style="width:200px;"
                     v-model="scope.row.date_array"
                     placeholder="选择"
+                    @change="upCount(scope.row)"
                     value-format="timestamp">
                   </el-date-picker>
                   <!-- {{ (scope.row.date_array) ? scope.row.date_array.length : 0 }} -->
@@ -170,6 +169,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import selecthr from './components/select-hr.vue' // 选择人员
 export default {
   name: 'add-job',
@@ -195,10 +195,10 @@ export default {
   watch: {
     'form.detailData': {
       handler (val) {
-        console.log('form.detailData', this.form.detailData)
+        // console.log('form.detailData', this.form.detailData)
         // 清空已计算的数值
         this.detailDataCount = {}
-        // 循环判断
+        // 循环判断，计算已选人员的工种统计信息
         this.form.detailData.forEach(item => {
           if (this.detailDataCount.hasOwnProperty(item.job_name) > 0) {
             this.detailDataCount[item.job_name] = this.detailDataCount[item.job_name] + 1
@@ -217,9 +217,12 @@ export default {
       this.$router.push('/project-list')
     },
     delClick (row) {},
+    upCount (row) {
+      console.log('upCount', row)
+      Vue.set(row.day_count, row.date_array.length)
+    },
     onSubmit () {
       let checkPassed = true
-
       try {
         this.form.detailData.forEach(element => {
           if (!element.date_array) {
@@ -278,10 +281,7 @@ export default {
 </script>
 
 <style scoped>
-.btn-block{
-  margin: 2;
-  width: 12%;
-  height: 50px;
-  border-radius: 20px;
+.btn-block {
+  height: 50px
 }
 </style>

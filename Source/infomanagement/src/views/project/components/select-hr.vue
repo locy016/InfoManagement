@@ -26,15 +26,15 @@
                 <template slot="prepend">分析前</template>
                 <template slot="append">条人员的信息是否可用</template>
               </el-input>
-              <el-input v-model="autoCheckUp.seleNumber" style="width:45%;margin-right:5%">
-                <template slot="prepend">选择前</template>
-                <template slot="append">条可用信息</template>
+              <el-input v-model="autoCheckUp.seleNumber" style="width:50%">
+                <template slot="prepend">自动选中前</template>
+                <template slot="append">条可用的人员信息</template>
               </el-input>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="对人员工期进行分析" placement="top">
             <el-card>
-              <el-button type="primary" @click="dateAnalysis()" plain style="width:45%;margin-right:5%">
+              <el-button type="success" @click="dateAnalysis()" plain style="width:100%">
                 <label for="">开始进行工期分析</label>
                 <template v-if="autoCheckUp.autoStatus">
                   {{ autoCheckUp.currNumber }} / {{ autoCheckUp.workCount }}
