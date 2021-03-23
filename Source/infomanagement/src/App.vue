@@ -11,7 +11,7 @@
           <el-menu-item index="/home">处理中心</el-menu-item>
           <el-submenu index="2">
             <template slot="title">信息管理</template>
-            <el-menu-item index="/job-type">工种类别</el-menu-item>
+            <el-menu-item v-show="false" index="/job-type">工种类别</el-menu-item>
             <el-menu-item index="/job-add">添加工种</el-menu-item>
             <el-menu-item index="/job-list">工种管理</el-menu-item>
           </el-submenu>

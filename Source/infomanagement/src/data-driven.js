@@ -117,7 +117,7 @@ export function addProject (json, callback) {
     _ext.run()
     let _judge = 'select * from t_hr_working where id_number = "' + element.id_number + '"'
     db.all(_judge, function (_err, row) {
-      let _sync = (row.length > 0) ? db.prepare('update t_hr_working set project_no = "' + element.id_number + '", start_date = "' + json.start_date + '", end_date = "' + json.end_date + '" where id_number = "' + element.id_number + '"') : db.prepare('insert into t_hr_working (id_number, project_no, start_date, end_date) values ("' + element.id_number + '", "' + json.project_no + '", "' + json.start_date + '","' + json.end_date + '")')
+      let _sync = (row.length > 0) ? db.prepare('update t_hr_working set project_no = "' + json.project_no + '", start_date = "' + json.start_date + '", end_date = "' + json.end_date + '" where id_number = "' + element.id_number + '"') : db.prepare('insert into t_hr_working (id_number, project_no, start_date, end_date) values ("' + element.id_number + '", "' + json.project_no + '", "' + json.start_date + '","' + json.end_date + '")')
       _sync.run()
     })
   })

@@ -3,10 +3,10 @@
     <!-- <h1>This is an select hr page</h1> -->
     <div class="m-0">
       <el-row :gutter="10">
-        <el-col :span="2">
-          <el-button class="w-100" @click="getSelectHrList()">全部</el-button>
+        <el-col :span="3">
+          <el-button class="w-100" @click="getSelectHrList()">查看全部</el-button>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="4">
           <el-select v-model="job_value" placeholder="按工种筛选" style="width:100%;">
             <el-option
               v-for="(item, index) in jobData"
@@ -16,13 +16,13 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="4">
           <el-date-picker type="date" placeholder="选择日期" style="width: 100%;" v-model="start_date" disabled></el-date-picker>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="4">
           <el-date-picker type="date" placeholder="选择日期" style="width: 100%;" v-model="end_date" disabled></el-date-picker>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="5">
           <el-input v-model="autoCheckUp.workCount">
             <template slot="prepend">查询前</template>
             <template slot="append">人</template>
@@ -119,9 +119,9 @@
             <el-table-column
                 width="120"
                 prop="start_date"
-                label="最后施工">
+                label="最后施工开始">
                 <template slot-scope="scope">
-                  <p>{{ (scope.row.create_time) ? formatShortDate(scope.row.create_time) : '空' }}</p>
+                  <p>{{ (scope.row.start_date) ? formatShortDate(scope.row.start_date) : '空' }}</p>
                 </template>
             </el-table-column>
             <el-table-column
@@ -148,7 +148,7 @@
             <el-table-column
                 width="120"
                 prop="end_date"
-                label="结束时间">
+                label="最后施工截至">
                 <template slot-scope="scope">
                   <p>{{ (scope.row.end_date) ? formatShortDate(scope.row.end_date) : '空' }}</p>
                 </template>
@@ -209,14 +209,14 @@ export default {
       this.getJobList()
     },
     getSelectHrList (jobNo) {
-      if (jobNo) {
-        //
-      } else {
+      if (!jobNo) {
+        // 如果工种不为空的话，在查询后置为空
         this.job_value = null
       }
       this.ipcRenderer.send('getSelectHrList', jobNo)
       this.ipcRenderer.once('getSelectHrList', (event, res) => {
         this.tableData = res
+        console.log('getSelectHrList', res)
         this.autoCheckUp.workCount = res.length
       })
     },
@@ -231,50 +231,53 @@ export default {
       this.ipcRenderer.send('getHrWorkLog', row.id_number)
       this.ipcRenderer.once('getHrWorkLog', (event, res) => {
         console.log('getHrWorkLog', res)
+        // 输出日志
         this.resultLog = res
         if (res.length > 0) {
-          let _eligible = true
+          row.eligible = true
+          // 循环检测
           res.forEach(element => {
-            if (!this.dateCheck(this.start_date, this.end_date, element.start_date, element.end_date)) {
-              _eligible = false
+            if (!this.dateCheck(element.start_date, element.end_date)) {
+              // 检测到冲突状态置为否
+              row.eligible = false
             }
           })
-          if (_eligible) {
-            this.toggleSelection(row)
-            row.eligible = _eligible
-          } else {
-            row.eligible = _eligible
+          // 工人可用的话添加选中标记
+          if (row.eligible) {
+            this.toggleSelection(row, true)
+            console.log('复选', row)
           }
-          this.checkStatus = false
         } else {
+          // 没有施工记录的人员直接标记为可用并选中
           row.eligible = true
-          this.toggleSelection(row)
-          this.checkStatus = false
+          this.toggleSelection(row, true)
+          console.log('选中', row)
         }
+        this.checkStatus = false
       })
     },
-    dateCheck (start, end, istart, iend) {
+    dateCheck (istart, iend) {
       // 项目开始日期
-      start = new Date(start).getTime()
+      let thisStart = new Date(this.start_date).getTime()
       // 项目结束日期
-      end = new Date(end).getTime()
+      let thisEnd = new Date(this.end_date).getTime()
       // 工作开始日期
       istart = new Date(istart).getTime()
       // 工作结束日期
       iend = new Date(iend).getTime()
       // 判断工作开始时间是不是在项目日期内，是的话日期有冲突 && 判断工作结束日期是不是在项目日期内，是的话日期有冲突
       // 1.判断工作开始日期有没有在其他项目工期内
-      if (start <= istart && istart <= end) {
+      if (thisStart <= istart && istart <= thisEnd) {
         console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '冲突，工作开始日期正在进行其他项目，dateCheck')
-        console.log(this.formatShortDate(start), this.formatShortDate(end), this.formatShortDate(istart), this.formatShortDate(iend))
+        console.log(this.formatShortDate(thisStart), this.formatShortDate(thisEnd), this.formatShortDate(istart), this.formatShortDate(iend))
         return false
-      } else if (start <= iend && iend <= end) {
+      } else if (thisStart <= iend && iend <= thisEnd) {
         console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '冲突，工作结束日期正在进行其他项目，dateCheck')
-        console.log(this.formatShortDate(start), this.formatShortDate(end), this.formatShortDate(istart), this.formatShortDate(iend))
+        console.log(this.formatShortDate(thisStart), this.formatShortDate(thisEnd), this.formatShortDate(istart), this.formatShortDate(iend))
         return false
       } else {
         console.log(this.formatShortDate(istart) + '-' + this.formatShortDate(iend) + '日期允许，dateCheck')
-        console.log(this.formatShortDate(start), this.formatShortDate(end), this.formatShortDate(istart), this.formatShortDate(iend))
+        console.log(this.formatShortDate(thisStart), this.formatShortDate(thisEnd), this.formatShortDate(istart), this.formatShortDate(iend))
         return true
       }
     },
