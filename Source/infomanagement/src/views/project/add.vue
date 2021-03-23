@@ -154,7 +154,7 @@
       </el-form>
     </div>
     <el-dialog
-      title="选择项目施工人员名单"
+      title="添加施工人员"
       :visible.sync="dialogVisible"
       :append-to-body="true"
       :destroy-on-close="true"
