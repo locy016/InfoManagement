@@ -4,8 +4,8 @@
 
     <div class="w-100">
       <div class="m-4">
-        <el-button @click="addBtn()" plain round><b>添加人员</b></el-button>
-        <el-button @click="importBtn()" plain round><b>导入人员</b></el-button>
+        <el-button @click="addBtn()" plain round><b>添加人员信息</b></el-button>
+        <el-button @click="importBtn()" plain round><b>导入人员数据</b></el-button>
       </div>
     </div>
 
@@ -18,12 +18,12 @@
 
     <div class="w-100">
       <div class="m-4">
-        <el-tag class="job-box" @click="getHrList"><b>全部</b></el-tag>
-        <el-tag class="job-box" v-for="(item, index) in jobData" :key="index">
-          <small @click="getHrListByJobNo(item.job_no)"
-            >{{ item.job_name }} ({{ item.job_count }}人)</small
-          >
-        </el-tag>
+        <span class="job-box" @click="getHrList">
+          <small>查看全部</small>
+        </span>
+        <span class="job-box" v-for="(item, index) in jobData" :key="index">
+          <small @click="getHrListByJobNo(item.job_no)">{{ item.job_name }} ({{ item.job_count }}人)</small>
+        </span>
       </div>
     </div>
 
@@ -181,11 +181,6 @@ export default {
 <style scoped>
 .job-box {
   margin: 1%;
-  width: 13%;
-  border-radius: 15px;
-  box-shadow: 1px 2px 1px rgba(28, 189, 199, 0.5);
-  color: aliceblue;
-  font-size: 1.1rem;
-  background: rgba(28, 189, 199, 1);
+  color: #979797;
 }
 </style>

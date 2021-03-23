@@ -192,9 +192,9 @@ export default {
     checkStatus (newVal) {
       if (!newVal) {
         if (this.autoCheckUp.autoStatus) {
-          if (this.autoCheckUp.currNumber < this.autoCheckUp.workCount) {
-            this.getLog(this.tableData[this.autoCheckUp.currNumber])
+          if (this.autoCheckUp.currNumber < this.autoCheckUp.workCount - 1) {
             this.autoCheckUp.currNumber += 1
+            this.getLog(this.tableData[this.autoCheckUp.currNumber])
           } else {
             this.autoCheckUp.autoStatus = false
           }

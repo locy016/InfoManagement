@@ -1,6 +1,6 @@
 <template>
   <div class="hr-import">
-    <h1>This is an hr import page</h1>
+    <h1>导入人员数据</h1>
 
     <div class="m-4">
       <el-form ref="form" label-width="80px">

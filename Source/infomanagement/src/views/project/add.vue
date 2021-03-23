@@ -1,6 +1,6 @@
 <template>
   <div class="add-project">
-    <h1>添加一个新的项目派工单</h1>
+    <h1>录入派工单信息</h1>
     <div class="m-4">
       <el-form ref="form" :model="form" label-width="80px">
 
