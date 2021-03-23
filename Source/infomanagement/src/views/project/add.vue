@@ -112,6 +112,9 @@
                 width="220"
                 prop="date_array"
                 label="施工日期">
+                <template slot="header">
+                  <label for="">施工日期</label>
+                </template>
                 <template slot-scope="scope">
                   <el-date-picker
                     type="dates"
@@ -130,7 +133,7 @@
                 prop="date_array"
                 label="时长/天">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.day_count" :placeholder="(scope.row.date_array) ? scope.row.date_array.length : 0"></el-input>
+                  <el-input disabled :placeholder="(scope.row.date_array) ? scope.row.date_array.length : 0"></el-input><!-- v-model="scope.row.day_count" -->
                 </template>
             </el-table-column>
 
@@ -145,12 +148,24 @@
           </el-table>
           </el-form-item>
         </div>
-
-        <el-form-item>
-          <el-button type="primary" class="w-50" @click="onSubmit">立即创建</el-button>
-          <el-button class="w-25" @click="listBtn()">工单管理</el-button>
-        </el-form-item>
       </el-form>
+      <div class="m-4">
+        <el-date-picker
+          type="dates"
+          style="width:100%"
+          align="center"
+          placeholder="为已选择的工人设置统一施工日期"
+          @change="upAllDate()"
+          v-model="customDate"
+          value-format="timestamp">
+        </el-date-picker>
+      </div>
+      <div class="m-4">
+        <el-button type="primary" class="w-100" @click="onSubmit">立即创建</el-button>
+      </div>
+      <div class="m-4">
+        <el-button type="text" @click="listBtn()">查看派工单管理</el-button>
+      </div>
     </div>
     <el-dialog
       title="添加施工人员"
@@ -169,7 +184,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import selecthr from './components/select-hr.vue' // 选择人员
 export default {
   name: 'add-job',
@@ -189,7 +203,8 @@ export default {
         detailData: []
       },
       detailDataCount: {},
-      dialogVisible: false
+      dialogVisible: false,
+      customDate: []
     }
   },
   watch: {
@@ -218,8 +233,14 @@ export default {
     },
     delClick (row) {},
     upCount (row) {
-      console.log('upCount', row)
-      Vue.set(row.day_count, row.date_array.length)
+      row.day_count = row.date_array.length
+    },
+    upAllDate () {
+      this.form.detailData.forEach(element => {
+        element.date_array = this.customDate
+        element.day_count = this.customDate.length
+      })
+      console.log('upAllDate', this.customDate, this.form.detailData)
     },
     onSubmit () {
       let checkPassed = true
