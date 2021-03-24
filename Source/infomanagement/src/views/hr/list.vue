@@ -10,7 +10,7 @@
     </div>
 
     <div class="m-4">
-      <el-input placeholder="关键词" class="w-50" icon="search" v-model="schfilter">
+      <el-input placeholder="关键词" class="w-75" icon="search" v-model="schfilter">
         <template slot="prepend">搜索</template>
         <el-button slot="append" @click="getHrListBySearch()" icon="el-icon-search"></el-button>
       </el-input>

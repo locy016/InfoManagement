@@ -7,7 +7,7 @@
     <div class="mr-4 pr-4">
       <div class="block">
         <el-timeline>
-          <el-timeline-item :timestamp="'施工日期' + formatShortDate(start_date) + '至' + formatShortDate(end_date) + ', 选择工种'" placement="top">
+          <el-timeline-item :timestamp="'1. 施工日期' + formatShortDate(start_date) + '至' + formatShortDate(end_date) + ', 选择当前要添加的工种。'" placement="top">
             <el-card>
               <el-select v-model="job_value" placeholder="按工种筛选" style="width:45%;margin-right:5%">
                 <el-option
@@ -20,7 +20,7 @@
               <label v-if="job_value" for="">当前所选工种共有 <b>{{tableData.length}}</b> 条人员信息</label>
             </el-card>
           </el-timeline-item>
-          <el-timeline-item timestamp="输入查询分析条件" placement="top">
+          <el-timeline-item timestamp="2. 输入查询分析条件, 人员信息过多时可以自定义分析数量, 同时可以设置在分析人员可用信息的同时自动选择多少条可用的信息。" placement="top">
             <el-card>
               <el-input v-model="autoCheckUp.workCount" style="width:45%;margin-right:5%">
                 <template slot="prepend">分析前</template>
@@ -32,7 +32,7 @@
               </el-input>
             </el-card>
           </el-timeline-item>
-          <el-timeline-item timestamp="对人员工期进行分析" placement="top">
+          <el-timeline-item timestamp="3. 单击'开始进行工期分析'后, 将对详细人员信息表中的记录进行工期分析, 分析过程中可再次单击中止分析。" placement="top">
             <el-card>
               <el-button type="success" @click="dateAnalysis()" plain style="width:100%">
                 <label for="">开始进行工期分析</label>
@@ -42,129 +42,92 @@
               </el-button>
             </el-card>
           </el-timeline-item>
+          <el-timeline-item timestamp="4. 详细信息, 单击展开可查看所选人员和人员具体信息。" placement="top">
+            <el-card>
+              <el-collapse v-model="activeNames">
+                <el-collapse-item :title="'共有 ' + tableData.length + ' 条信息, 已选择 ' + multipleSelection.length + ' 条。'" name="1">
+                  <div style="height:300px;overflow-y:auto;">
+                    <el-table :data="tableData" ref="multipleTable" style="width: 100%;" @selection-change="handleSelectionChange">
+                        <el-table-column type="selection" width="55"></el-table-column>
+                        <el-table-column
+                            prop="eligible"
+                            label="可用标记">
+                            <template slot-scope="scope">
+                              <template v-if="scope.row.eligible">
+                                <i class="el-icon-circle-check color-success"></i>
+                                </template>
+                                <template v-else>
+                                  <i class="el-icon-warning-outline color-gray"></i>
+                                </template>
+                              {{ scope.row.eligible }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="level_name" label="级别"></el-table-column>
+                        <el-table-column prop="real_name" label="姓名"></el-table-column>
+                        <el-table-column prop="id_number" label="性别">
+                            <template slot-scope="scope">
+                              {{ (scope.row.id_number.substr(16,1) % 2 === 1) ? '男' : '女' }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="id_number" label="年龄">
+                            <template slot-scope="scope">
+                              {{ calculateAge(scope.row.id_number.substr(6,8)) }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="120" prop="mobile_phone" label="电话"></el-table-column>
+                        <el-table-column width="170" prop="id_number" label="身份证号"></el-table-column>
+                        <el-table-column prop="job_name" label="工种"></el-table-column>
+                        <el-table-column width="120" prop="start_date" label="施工记录">
+                            <template slot-scope="scope">
+                              <el-popover placement="left" width="400" trigger="click">
+                                <div>
+                                  <ul>
+                                    <li v-for="(item, index) in resultLog" :key="index">{{'项目:'+item.project_name+'(工作'+item.day_count+'天)'}}:{{formatShortDate(item.start_date)}}-{{formatShortDate(item.end_date)}}</li>
+                                  </ul>
+                                </div>
+                                <el-button slot="reference" type="text" @click="getLog(scope.row)">点击查询</el-button>
+                              </el-popover>
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="120" prop="start_date" label="最后施工开始">
+                            <template slot-scope="scope">
+                              <p>{{ (scope.row.start_date) ? formatShortDate(scope.row.start_date) : '空' }}</p>
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="120" prop="last_date_array" label="施工日期">
+                            <template slot-scope="scope">
+                              <template v-if="scope.row.last_date_array">
+                                {{ JSON.parse('[' + scope.row.last_date_array + ']').length }}天
+                                <el-tooltip class="item" effect="dark" :content="scope.row.last_date_array" placement="left">
+                                  <div slot="content">
+                                    <p for="" v-for="(item, index) in JSON.parse('[' + scope.row.last_date_array + ']')" :key="index">
+                                      {{ formatShortDate(item) }}
+                                    </p>
+                                  </div>
+                                  <i class="el-icon-info"></i>
+                                </el-tooltip>
+                              </template>
+                              <template v-else>空</template>
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="120" prop="end_date" label="最后施工截至">
+                            <template slot-scope="scope">
+                              <p>{{ (scope.row.end_date) ? formatShortDate(scope.row.end_date) : '空' }}</p>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="5. 确定添加, 将所选人员加入派单列表中。" placement="top">
+            <el-card>
+              <el-button class="w-100" @click="onUpd" type="primary" >添加所选人员名单</el-button>
+            </el-card>
+          </el-timeline-item>
         </el-timeline>
       </div>
-    </div>
-
-    <!-- 详细信息放在折叠面板中 -->
-    <div class="m-4 p-4">
-      <el-collapse v-model="activeNames">
-        <el-collapse-item :title="'共有' + tableData.length + '条记录, 已选' + multipleSelection.length + '条记录, 点击查看详细人员信息'" name="1">
-          <div style="height:300px;overflow-y:auto;">
-            <el-table
-                :data="tableData"
-                ref="multipleTable"
-                style="width: 100%;"
-                @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column
-                    prop="eligible"
-                    label="可用标记">
-                    <template slot-scope="scope">
-                      <template v-if="scope.row.eligible">
-                        <i class="el-icon-circle-check color-success"></i>
-                        </template>
-                        <template v-else>
-                          <i class="el-icon-warning-outline color-gray"></i>
-                        </template>
-                      {{ scope.row.eligible }}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="level_name" label="级别"></el-table-column>
-                <el-table-column prop="real_name" label="姓名"></el-table-column>
-                <el-table-column
-                    prop="id_number"
-                    label="性别">
-                    <template slot-scope="scope">
-                      {{ (scope.row.id_number.substr(16,1) % 2 === 1) ? '男' : '女' }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    prop="id_number"
-                    label="年龄">
-                    <template slot-scope="scope">
-                      {{ calculateAge(scope.row.id_number.substr(6,8)) }}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    width="120"
-                    prop="mobile_phone"
-                    label="电话">
-                </el-table-column>
-                <el-table-column
-                    width="170"
-                    prop="id_number"
-                    label="身份证号">
-                </el-table-column>
-                <el-table-column
-                    prop="job_name"
-                    label="工种">
-                </el-table-column>
-                <el-table-column
-                    width="120"
-                    prop="start_date"
-                    label="施工记录">
-                    <template slot-scope="scope">
-                      <!-- <el-button type="text" @click="getLog(scope.row.id_number)">点击查询</el-button> -->
-                      <el-popover
-                        placement="left"
-                        width="400"
-                        trigger="click">
-                        <div>
-                          <ul>
-                            <li v-for="(item, index) in resultLog" :key="index">{{'项目:'+item.project_name+'(工作'+item.day_count+'天)'}}:{{formatShortDate(item.start_date)}}-{{formatShortDate(item.end_date)}}</li>
-                          </ul>
-                        </div>
-                        <el-button slot="reference" type="text" @click="getLog(scope.row)">点击查询</el-button>
-                      </el-popover>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    width="120"
-                    prop="start_date"
-                    label="最后施工开始">
-                    <template slot-scope="scope">
-                      <p>{{ (scope.row.start_date) ? formatShortDate(scope.row.start_date) : '空' }}</p>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    width="120"
-                    prop="last_date_array"
-                    label="施工日期">
-                    <template slot-scope="scope">
-                      <template v-if="scope.row.last_date_array">
-                        {{ JSON.parse('[' + scope.row.last_date_array + ']').length }}天
-                        <el-tooltip class="item" effect="dark" :content="scope.row.last_date_array" placement="left">
-                          <div slot="content">
-                            <p for="" v-for="(item, index) in JSON.parse('[' + scope.row.last_date_array + ']')" :key="index">
-                              {{ formatShortDate(item) }}
-                            </p>
-                          </div>
-                          <i class="el-icon-info"></i>
-                        </el-tooltip>
-                      </template>
-                      <template v-else>
-                        空
-                      </template>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    width="120"
-                    prop="end_date"
-                    label="最后施工截至">
-                    <template slot-scope="scope">
-                      <p>{{ (scope.row.end_date) ? formatShortDate(scope.row.end_date) : '空' }}</p>
-                    </template>
-                </el-table-column>
-
-            </el-table>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
-    </div>
-
-    <div class="m-2">
-      <el-button class="w-100" @click="onUpd" type="primary" >添加所选人员名单</el-button>
     </div>
   </div>
 </template>
